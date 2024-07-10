@@ -1,0 +1,98 @@
+package com.tinqinacademy.hotel.core;
+
+import com.tinqinacademy.hotel.api.operations.system.createroom.CreateRoomInput;
+import com.tinqinacademy.hotel.api.operations.system.createroom.CreateRoomOutput;
+import com.tinqinacademy.hotel.api.operations.system.deleteroom.DeleteRoomInput;
+import com.tinqinacademy.hotel.api.operations.system.deleteroom.DeleteRoomOutput;
+import com.tinqinacademy.hotel.api.operations.system.inforregister.InfoRegisterInput;
+import com.tinqinacademy.hotel.api.operations.system.inforregister.InfoRegisterOutput;
+import com.tinqinacademy.hotel.api.operations.system.partialupdate.PartialUpdateRoomInput;
+import com.tinqinacademy.hotel.api.operations.system.partialupdate.PartialUpdateRoomOutput;
+import com.tinqinacademy.hotel.api.operations.system.registervisitor.RegisterVisitorInput;
+import com.tinqinacademy.hotel.api.operations.system.registervisitor.RegisterVisitorOutput;
+import com.tinqinacademy.hotel.api.operations.system.updateroom.UpdateRoomInput;
+import com.tinqinacademy.hotel.api.operations.system.updateroom.UpdateRoomOutput;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+@Slf4j
+@Service
+public class SystemServiceImpl implements SystemService{
+    @Override
+    public RegisterVisitorOutput registerVisitor(RegisterVisitorInput input) {
+        log.info("Start registerVisitor input: {}", input);
+
+        RegisterVisitorOutput output = new RegisterVisitorOutput();
+
+        log.info("End registerVisitor output: {}", output);
+        return output;
+    }
+
+    @Override
+    public InfoRegisterOutput getRegisterInfo(InfoRegisterInput input) {
+        log.info("Start getRegisterInfo input: {}", input);
+
+        InfoRegisterOutput output = InfoRegisterOutput.builder()
+                .startDate(input.getStartDate())
+                .endDate(input.getEndDate())
+                .firstName(input.getFirstName())
+                .lastName(input.getLastName())
+                .phone(input.getPhone())
+                .idCardNumber(input.getIdCardNumber())
+                .idCardIssueAuthority(input.getIdCardIssueAuthority())
+                .idCardValidity(input.getIdCardValidity())
+                .idCardIssueDate(input.getIdCardIssueDate())
+                .build();
+
+        log.info("End getRegisterInfo output: {}", output);
+        return output;
+    }
+
+    @Override
+    public CreateRoomOutput createRoom(CreateRoomInput input) {
+        log.info("Start createRoom input: {}", input);
+
+        CreateRoomOutput output = CreateRoomOutput.builder()
+                .id("3")
+                .build();
+
+        log.info("End createRoom output: {}", output);
+        return output;
+    }
+
+    @Override
+    public UpdateRoomOutput updateRoom(UpdateRoomInput input) {
+        log.info("Start updateRoom input: {}", input);
+
+//        if(input.getRoomId().equals("5")) throw new NotFoundException("Room Id not found");
+
+        UpdateRoomOutput output = UpdateRoomOutput.builder()
+                .id(input.getRoomId())
+                .build();
+
+        log.info("End updateRoom output: {}", output);
+        return output;
+    }
+
+    @Override
+    public PartialUpdateRoomOutput partialUpdateRoom(PartialUpdateRoomInput input) {
+        log.info("Start partialUpdateRoom input: {}", input);
+
+        PartialUpdateRoomOutput output = PartialUpdateRoomOutput.builder()
+                .id(input.getRoomId())
+                .build();
+
+        log.info("End partialUpdateRoom output: {}", output);
+        return output;
+    }
+
+    @Override
+    public DeleteRoomOutput deleteRoom(DeleteRoomInput input) {
+        log.info("Start deleteRoom input: {}", input);
+
+        DeleteRoomOutput output = new DeleteRoomOutput();
+
+        log.info("End deleteRoom output: {}", output);
+        return output;
+    }
+}
