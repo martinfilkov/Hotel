@@ -1,5 +1,6 @@
 package com.tinqinacademy.hotel.core;
 
+import com.tinqinacademy.hotel.api.operations.exception.NotFoundException;
 import com.tinqinacademy.hotel.api.operations.system.createroom.CreateRoomInput;
 import com.tinqinacademy.hotel.api.operations.system.createroom.CreateRoomOutput;
 import com.tinqinacademy.hotel.api.operations.system.deleteroom.DeleteRoomInput;
@@ -64,7 +65,7 @@ public class SystemServiceImpl implements SystemService{
     public UpdateRoomOutput updateRoom(UpdateRoomInput input) {
         log.info("Start updateRoom input: {}", input);
 
-//        if(input.getRoomId().equals("5")) throw new NotFoundException("Room Id not found");
+        if(input.getRoomId().equals("5")) throw new NotFoundException("Room Id not found");
 
         UpdateRoomOutput output = UpdateRoomOutput.builder()
                 .id(input.getRoomId())

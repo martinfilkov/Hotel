@@ -1,7 +1,7 @@
 package com.tinqinacademy.hotel.rest.errorhandling;
 
-import com.tinqinacademy.hotel.rest.exception.ErrorWrapper;
-import com.tinqinacademy.hotel.rest.exception.NotFoundException;
+import com.tinqinacademy.hotel.api.operations.exception.ErrorWrapper;
+import com.tinqinacademy.hotel.api.operations.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 

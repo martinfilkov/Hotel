@@ -10,13 +10,10 @@ import com.tinqinacademy.hotel.api.operations.hotel.roombyid.RoomByIdOutput;
 import com.tinqinacademy.hotel.api.operations.hotel.unbookroom.UnbookRoomInput;
 import com.tinqinacademy.hotel.api.operations.hotel.unbookroom.UnbookRoomOutput;
 import com.tinqinacademy.hotel.core.HotelService;
-import com.tinqinacademy.hotel.core.HotelServiceImpl;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +23,6 @@ import java.time.LocalDate;
 @RestController
 @RequestMapping("/api/hotel")
 @RequiredArgsConstructor
-@Import(HotelServiceImpl.class)
 public class HotelController {
     private final HotelService hotelService;
     private final ObjectMapper objectMapper;

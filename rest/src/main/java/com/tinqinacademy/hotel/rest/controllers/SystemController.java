@@ -14,12 +14,10 @@ import com.tinqinacademy.hotel.api.operations.system.registervisitor.RegisterVis
 import com.tinqinacademy.hotel.api.operations.system.updateroom.UpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.system.updateroom.UpdateRoomOutput;
 import com.tinqinacademy.hotel.core.SystemService;
-import com.tinqinacademy.hotel.core.SystemServiceImpl;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +28,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/system")
 @RequiredArgsConstructor
-@Import(SystemServiceImpl.class)
 public class SystemController {
     private final SystemService systemService;
     private final ObjectMapper objectMapper;

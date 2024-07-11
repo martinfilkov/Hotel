@@ -1,6 +1,7 @@
-package com.tinqinacademy.hotel.rest.exception;
+package com.tinqinacademy.hotel.rest.errorhandling;
 
-import com.tinqinacademy.hotel.rest.errorhandling.ErrorHandler;
+import com.tinqinacademy.hotel.api.operations.exception.ErrorWrapper;
+import com.tinqinacademy.hotel.api.operations.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
