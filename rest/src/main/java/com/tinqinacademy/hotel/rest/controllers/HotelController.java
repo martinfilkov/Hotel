@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 
 @RestController
-@RequestMapping("/api/hotel")
 @RequiredArgsConstructor
 public class HotelController {
     private final HotelService hotelService;
@@ -31,7 +30,7 @@ public class HotelController {
             @ApiResponse(responseCode = "200", description = "Successfully returned ids"),
             @ApiResponse(responseCode = "403", description = "User not authorized")
     })
-    @GetMapping("/rooms")
+    @GetMapping(URLMapping.GET_IDS)
     public ResponseEntity<GetRoomIdsOutput> getIds(
             @RequestParam("startDate") LocalDate startDate,
             @RequestParam("endDate") LocalDate endDate,
@@ -55,7 +54,7 @@ public class HotelController {
             @ApiResponse(responseCode = "403", description = "User not authorized"),
             @ApiResponse(responseCode = "404", description = "Room not found")
     })
-    @GetMapping("/{id}")
+    @GetMapping(URLMapping.GET_ROOM)
     public ResponseEntity<RoomByIdOutput> getRoom(@PathVariable String id){
         RoomByIdInput input = RoomByIdInput.builder()
                 .id(id)
@@ -70,7 +69,7 @@ public class HotelController {
             @ApiResponse(responseCode = "201", description = "Successfully booked room"),
             @ApiResponse(responseCode = "403", description = "User not authorized")
     })
-    @PostMapping("/{id}")
+    @PostMapping(URLMapping.BOOK_ROOM)
     public ResponseEntity<BookRoomOutput> bookRoom(@PathVariable String id,
                                                    @Valid @RequestBody BookRoomInput request){
         BookRoomInput input = request.toBuilder()
@@ -85,7 +84,7 @@ public class HotelController {
             @ApiResponse(responseCode = "403", description = "User not authorized"),
             @ApiResponse(responseCode = "404", description = "Room not found")
     })
-    @DeleteMapping("/{id}")
+    @DeleteMapping(URLMapping.UNBOOK_ROOM)
     public ResponseEntity<UnbookRoomOutput> unbookRoom(@PathVariable String id){
         UnbookRoomInput input = UnbookRoomInput.builder()
                 .bookingId(id)

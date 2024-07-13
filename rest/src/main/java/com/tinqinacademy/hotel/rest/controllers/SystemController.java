@@ -26,7 +26,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/system")
 @RequiredArgsConstructor
 public class SystemController {
     private final SystemService systemService;
@@ -36,7 +35,7 @@ public class SystemController {
             @ApiResponse(responseCode = "201", description = "Registered a visitor"),
             @ApiResponse(responseCode = "403", description = "User not authorized")
     })
-    @PostMapping("/register")
+    @PostMapping(URLMapping.REGISTER_VISITOR)
     public ResponseEntity<RegisterVisitorOutput> register(@Valid @RequestBody RegisterVisitorInput input){
         RegisterVisitorOutput output = systemService.registerVisitor(input);
 
@@ -48,7 +47,7 @@ public class SystemController {
             @ApiResponse(responseCode = "403", description = "User not authorized"),
             @ApiResponse(responseCode = "404", description = "Visitor not found")
     })
-    @GetMapping("/register")
+    @GetMapping(URLMapping.INFO_REGISTRY)
     public ResponseEntity<List<InfoRegisterOutput>> infoRegistry(
             @RequestParam("startDate") LocalDate startDate,
             @RequestParam("endDate") LocalDate endDate,
@@ -85,7 +84,7 @@ public class SystemController {
             @ApiResponse(responseCode = "201", description = "Successfully created a room"),
             @ApiResponse(responseCode = "403", description = "User not authorized")
     })
-    @PostMapping("/room")
+    @PostMapping(URLMapping.CREATE_ROOM)
     public ResponseEntity<CreateRoomOutput> create(@Valid @RequestBody CreateRoomInput input){
         CreateRoomOutput output = systemService.createRoom(input);
 
@@ -97,7 +96,7 @@ public class SystemController {
             @ApiResponse(responseCode = "403", description = "User not authorized"),
             @ApiResponse(responseCode = "404", description = "Room not found")
     })
-    @PutMapping("/room/{roomId}")
+    @PutMapping(URLMapping.UPDATE_ROOM)
     public ResponseEntity<UpdateRoomOutput> update(@PathVariable("roomId") String id,
                                                    @Valid @RequestBody UpdateRoomInput request){
         UpdateRoomInput input = request.toBuilder()
@@ -114,7 +113,7 @@ public class SystemController {
             @ApiResponse(responseCode = "403", description = "User not authorized"),
             @ApiResponse(responseCode = "404", description = "Room not found")
     })
-    @PatchMapping("/room/{roomId}")
+    @PatchMapping(URLMapping.PARTIAL_UPDATE_ROOM)
     public ResponseEntity<PartialUpdateRoomOutput> partialUpdate(@PathVariable("roomId") String id,
                                                                  @Valid @RequestBody PartialUpdateRoomInput request){
         PartialUpdateRoomInput input = request.toBuilder()
@@ -131,7 +130,7 @@ public class SystemController {
             @ApiResponse(responseCode = "403", description = "User not authorized"),
             @ApiResponse(responseCode = "404", description = "Room not found")
     })
-    @DeleteMapping("/room/{roomId}")
+    @DeleteMapping(URLMapping.DELETE_ROOM)
     public ResponseEntity<DeleteRoomOutput> delete(@PathVariable("roomId") String id){
         DeleteRoomInput input = DeleteRoomInput.builder()
                 .id(id)
