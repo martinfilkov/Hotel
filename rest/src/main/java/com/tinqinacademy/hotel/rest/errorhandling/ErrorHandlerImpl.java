@@ -18,7 +18,7 @@ public class ErrorHandlerImpl implements ErrorHandler {
         List<ErrorResponse> errors = new ArrayList<>();
 
         ex.getBindingResult().getFieldErrors().forEach(e ->
-                errors.add(buildErrorResponse(HttpStatus.BAD_REQUEST, e.getDefaultMessage())));
+                errors.add(buildErrorResponse(status, e.getDefaultMessage())));
 
         ErrorWrapper error = buildErrorWrapper(errors);
 
@@ -27,7 +27,7 @@ public class ErrorHandlerImpl implements ErrorHandler {
 
     @Override
     public ErrorWrapper handle(NotFoundException ex, HttpStatus status){
-        ErrorResponse errorResponse = buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+        ErrorResponse errorResponse = buildErrorResponse(status, ex.getMessage());
 
         ErrorWrapper error = buildErrorWrapper(List.of(errorResponse));
 
