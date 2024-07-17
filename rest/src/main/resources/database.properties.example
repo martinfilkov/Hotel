@@ -1,0 +1,5 @@
+db.host=localhost
+db.port=5665
+db.name=hotel
+db.username=postgres
+db.password=postgres
