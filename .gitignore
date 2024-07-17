@@ -37,3 +37,4 @@ build/
 
 ### Application Properties ###
 application.properties
+database.properties
