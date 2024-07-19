@@ -4,6 +4,7 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,8 +16,7 @@ public class CreateRoomInput {
     @Max(value = 5, message = "You can't have more than 5 beds")
     private Integer bedCount;
 
-    @NotBlank(message = "Bed size cannot be null")
-    private String bedSize;
+    private List<String> bedSizes;
 
     @NotBlank(message = "Bathroom type cannot be null")
     private String bathRoomType;

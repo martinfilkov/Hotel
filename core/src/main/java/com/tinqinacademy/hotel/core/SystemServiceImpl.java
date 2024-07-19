@@ -13,12 +13,24 @@ import com.tinqinacademy.hotel.api.operations.system.registervisitor.RegisterVis
 import com.tinqinacademy.hotel.api.operations.system.registervisitor.RegisterVisitorOutput;
 import com.tinqinacademy.hotel.api.operations.system.updateroom.UpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.system.updateroom.UpdateRoomOutput;
+import com.tinqinacademy.hotel.persistence.entity.Room;
+import com.tinqinacademy.hotel.persistence.model.BathroomType;
+import com.tinqinacademy.hotel.persistence.model.BedSize;
+import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
 public class SystemServiceImpl implements SystemService{
+    private final RoomRepository roomRepository;
+
+    @Autowired
+    public SystemServiceImpl(RoomRepository roomRepository) {
+        this.roomRepository = roomRepository;
+    }
+
     @Override
     public RegisterVisitorOutput registerVisitor(RegisterVisitorInput input) {
         log.info("Start registerVisitor input: {}", input);
@@ -53,8 +65,18 @@ public class SystemServiceImpl implements SystemService{
     public CreateRoomOutput createRoom(CreateRoomInput input) {
         log.info("Start createRoom input: {}", input);
 
+        Room room = Room.builder()
+                .bathroomType(BathroomType.getByCode(input.getBathRoomType()))
+                .floor(input.getFloor())
+                .roomNumber(input.getRoomNumber())
+                .price(input.getPrice())
+                .bedSizes(input.getBedSizes().stream().map(BedSize::getByCode).toList())
+                .build();
+
+        Room savedRoom = roomRepository.save(room);
+
         CreateRoomOutput output = CreateRoomOutput.builder()
-                .id("3")
+                .id(savedRoom.getId().toString())
                 .build();
 
         log.info("End createRoom output: {}", output);

@@ -18,7 +18,7 @@ public class RoomByIdOutput {
     private String id;
     private BigDecimal price;
     private Integer floor;
-    private BedSize bedSize;
+    private List<BedSize> bedSizes;
     private BathroomType bathroomType;
     private List<LocalDate> datesOccupied;
 }

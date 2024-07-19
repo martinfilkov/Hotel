@@ -9,7 +9,7 @@ import lombok.*;
 @Setter
 @Builder
 @ToString
-public class Bed {
+public class Bed implements Entity{
     private Integer id;
     private BedSize bedSize;
     private Integer count;

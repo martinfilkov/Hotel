@@ -1,7 +1,6 @@
 package com.tinqinacademy.hotel.core;
 
-import com.tinqinacademy.hotel.persistence.model.BathroomType;
-import com.tinqinacademy.hotel.persistence.model.BedSize;
+import com.tinqinacademy.hotel.api.operations.exception.NotFoundException;
 import com.tinqinacademy.hotel.api.operations.hotel.bookroom.BookRoomInput;
 import com.tinqinacademy.hotel.api.operations.hotel.bookroom.BookRoomOutput;
 import com.tinqinacademy.hotel.api.operations.hotel.getroomids.GetRoomIdsInput;
@@ -10,16 +9,27 @@ import com.tinqinacademy.hotel.api.operations.hotel.roombyid.RoomByIdInput;
 import com.tinqinacademy.hotel.api.operations.hotel.roombyid.RoomByIdOutput;
 import com.tinqinacademy.hotel.api.operations.hotel.unbookroom.UnbookRoomInput;
 import com.tinqinacademy.hotel.api.operations.hotel.unbookroom.UnbookRoomOutput;
+import com.tinqinacademy.hotel.persistence.entity.Room;
+import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Service
-public class HotelServiceImpl implements HotelService{
+public class HotelServiceImpl implements HotelService {
+    private final RoomRepository roomRepository;
+
+    @Autowired
+    public HotelServiceImpl(RoomRepository roomRepository) {
+        this.roomRepository = roomRepository;
+    }
+
     @Override
     public GetRoomIdsOutput getRoomIds(GetRoomIdsInput input) {
         log.info("Start getRoomIds input: {}", input);
@@ -34,13 +44,21 @@ public class HotelServiceImpl implements HotelService{
     @Override
     public RoomByIdOutput getRoom(RoomByIdInput input) {
         log.info("Start getRoom input: {}", input);
+
+        Optional<Room> roomOptional = roomRepository.findById(UUID.fromString((input.getId())));
+
+        if (roomOptional.isEmpty()) {
+            throw new NotFoundException("Room with id " + input.getId() + " not found");
+        }
+
+        Room room = roomOptional.get();
         RoomByIdOutput output = RoomByIdOutput.builder()
-                .id(input.getId())
-                .floor(3)
-                .bathroomType(BathroomType.PRIVATE)
-                .bedSize(BedSize.DOUBLE)
+                .id(room.getId().toString())
+                .floor(room.getFloor())
+                .bathroomType(room.getBathroomType())
+                .bedSizes(room.getBedSizes())
                 .datesOccupied(new ArrayList<>())
-                .price(BigDecimal.TEN)
+                .price(room.getPrice())
                 .build();
 
         log.info("End getRoom output: {}", output);
