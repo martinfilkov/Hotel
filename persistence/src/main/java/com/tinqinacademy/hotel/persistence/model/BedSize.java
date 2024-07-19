@@ -1,22 +1,26 @@
-package com.tinqinacademy.hotel.api.model;
+package com.tinqinacademy.hotel.persistence.model;
 
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import lombok.Getter;
 
 import java.util.Arrays;
 
+@Getter
 public enum BedSize {
-    SINGLE("single"),
-    DOUBLE("double"),
-    SMALLDOUBLE("smalldouble"),
-    KINGSIZE("kingsize"),
-    QUEENSIZE("queensize"),
-    UNKNOWN("");
+    SINGLE("single", 1),
+    DOUBLE("double", 2),
+    SMALLDOUBLE("smalldouble", 2),
+    KINGSIZE("kingsize", 3),
+    QUEENSIZE("queensize", 3),
+    UNKNOWN("",0);
     private final String code;
+    private final Integer count;
 
-    BedSize(String code){
+    BedSize(String code, Integer count){
         this.code = code;
+        this.count = count;
     }
 
     @JsonCreator

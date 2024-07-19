@@ -1,7 +1,7 @@
 package com.tinqinacademy.hotel.core;
 
-import com.tinqinacademy.hotel.api.model.BathroomType;
-import com.tinqinacademy.hotel.api.model.BedSize;
+import com.tinqinacademy.hotel.persistence.model.BathroomType;
+import com.tinqinacademy.hotel.persistence.model.BedSize;
 import com.tinqinacademy.hotel.api.operations.hotel.bookroom.BookRoomInput;
 import com.tinqinacademy.hotel.api.operations.hotel.bookroom.BookRoomOutput;
 import com.tinqinacademy.hotel.api.operations.hotel.getroomids.GetRoomIdsInput;

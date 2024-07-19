@@ -2,6 +2,7 @@ package com.tinqinacademy.hotel.rest.errorhandling;
 
 import com.tinqinacademy.hotel.api.operations.exception.ErrorWrapper;
 import com.tinqinacademy.hotel.api.operations.exception.NotFoundException;
+import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<ErrorWrapper> handleException(NotFoundException ex) {
         ErrorWrapper error = errorHandler.handle(ex, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorWrapper> handleException(PSQLException ex) {
+        ErrorWrapper error = errorHandler.handle(ex, HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 }

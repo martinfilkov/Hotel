@@ -1,4 +1,4 @@
-package com.tinqinacademy.hotel.api.model;
+package com.tinqinacademy.hotel.persistence.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;

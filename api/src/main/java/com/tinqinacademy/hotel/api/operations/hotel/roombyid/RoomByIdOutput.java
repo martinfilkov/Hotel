@@ -1,7 +1,7 @@
 package com.tinqinacademy.hotel.api.operations.hotel.roombyid;
 
-import com.tinqinacademy.hotel.api.model.BathroomType;
-import com.tinqinacademy.hotel.api.model.BedSize;
+import com.tinqinacademy.hotel.persistence.model.BathroomType;
+import com.tinqinacademy.hotel.persistence.model.BedSize;
 import lombok.*;
 
 import java.math.BigDecimal;
