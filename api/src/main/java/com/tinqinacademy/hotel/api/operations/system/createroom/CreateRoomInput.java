@@ -1,6 +1,8 @@
 package com.tinqinacademy.hotel.api.operations.system.createroom;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -13,9 +15,6 @@ import java.util.List;
 @Builder
 @ToString
 public class CreateRoomInput {
-    @Max(value = 5, message = "You can't have more than 5 beds")
-    private Integer bedCount;
-
     private List<String> bedSizes;
 
     @NotBlank(message = "Bathroom type cannot be null")

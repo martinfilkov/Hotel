@@ -21,6 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Slf4j
 @Service
 public class SystemServiceImpl implements SystemService{
@@ -112,6 +114,8 @@ public class SystemServiceImpl implements SystemService{
     @Override
     public DeleteRoomOutput deleteRoom(DeleteRoomInput input) {
         log.info("Start deleteRoom input: {}", input);
+
+        roomRepository.delete(UUID.fromString(input.getId()));
 
         DeleteRoomOutput output = new DeleteRoomOutput();
 

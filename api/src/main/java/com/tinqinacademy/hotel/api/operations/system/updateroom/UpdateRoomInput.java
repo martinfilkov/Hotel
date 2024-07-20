@@ -18,9 +18,6 @@ public class UpdateRoomInput {
     @JsonIgnore
     private String roomId;
 
-    @Max(value = 5, message = "You can't have more than 5 beds")
-    private Integer bedCount;
-
     @NotBlank(message = "Bed size cannot be empty")
     private String bedSize;
 

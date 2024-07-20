@@ -17,9 +17,6 @@ public class PartialUpdateRoomInput {
     @JsonIgnore
     private String roomId;
 
-    @Max(value = 5, message = "You can't have more than 5 beds")
-    private Integer bedCount;
-
     private String bedSize;
 
     private String bathRoomType;
