@@ -7,6 +7,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,14 +19,10 @@ public class UpdateRoomInput {
     @JsonIgnore
     private String roomId;
 
-    @NotBlank(message = "Bed size cannot be empty")
-    private String bedSize;
+    private List<String> bedSizes;
 
     @NotBlank(message = "Bathroom type cannot be null")
     private String bathRoomType;
-
-    @Max(value = 20, message = "There cannot be more that 20 floors")
-    private Integer floor;
 
     @NotBlank(message = "Room number cannot be null")
     private String roomNumber;

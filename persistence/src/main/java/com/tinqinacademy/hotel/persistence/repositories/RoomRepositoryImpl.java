@@ -140,4 +140,28 @@ public class RoomRepositoryImpl implements RoomRepository {
         String getCount = "SELECT COUNT(*) FROM rooms";
         return jdbcTemplate.queryForObject(getCount, Long.class);
     }
+
+    @Override
+    public Room update(Room entity) {
+        String roomUpdate = "UPDATE rooms SET bathroom_type = ?, room_number = ?, price = ? WHERE id = ?";
+        jdbcTemplate.update(roomUpdate,
+                entity.getBathroomType().toString(),
+                entity.getRoomNumber(),
+                entity.getPrice(),
+                entity.getId());
+
+        String deleteRoomToBed = "DELETE FROM room_to_bed WHERE room_id = ?";
+        jdbcTemplate.update(deleteRoomToBed, entity.getId());
+
+        String getBedIdQuery = "SELECT id FROM beds WHERE bed_size = ?";
+
+        entity.getBedSizes().stream()
+                .map(bedSize -> jdbcTemplate.queryForObject(getBedIdQuery, Long.class, bedSize.toString()))
+                .forEach(bedId -> {
+                    String roomToBedInsert = "INSERT INTO room_to_bed(room_id, bed_id) VALUES(?, ?)";
+                    jdbcTemplate.update(roomToBedInsert, entity.getId(), bedId);
+                });
+
+        return entity;
+    }
 }

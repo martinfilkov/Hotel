@@ -89,10 +89,18 @@ public class SystemServiceImpl implements SystemService{
     public UpdateRoomOutput updateRoom(UpdateRoomInput input) {
         log.info("Start updateRoom input: {}", input);
 
-        if(input.getRoomId().equals("5")) throw new NotFoundException("Room Id not found");
+        Room room = Room.builder()
+                .id(UUID.fromString(input.getRoomId()))
+                .bedSizes(input.getBedSizes().stream().map(BedSize::getByCode).toList())
+                .bathroomType(BathroomType.getByCode(input.getBathRoomType()))
+                .roomNumber(input.getRoomNumber())
+                .price(input.getPrice())
+                .build();
+
+        Room updatedRoom = roomRepository.update(room);
 
         UpdateRoomOutput output = UpdateRoomOutput.builder()
-                .id(input.getRoomId())
+                .id(updatedRoom.getId().toString())
                 .build();
 
         log.info("End updateRoom output: {}", output);
