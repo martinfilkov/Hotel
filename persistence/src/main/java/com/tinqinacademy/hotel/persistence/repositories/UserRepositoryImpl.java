@@ -47,7 +47,7 @@ public class UserRepositoryImpl implements UserRepository {
 
         Optional<User> user = Optional.of(
                 jdbcTemplate.query(findUser, (rs, rowNum) -> User.builder()
-                                .id(UUID.fromString(rs.getString("id")))
+                                .id(rs.getObject("id", UUID.class))
                                 .username(rs.getString("username"))
                                 .password(rs.getString("password"))
                                 .birthDate(rs.getDate("birth_date"))
@@ -76,7 +76,7 @@ public class UserRepositoryImpl implements UserRepository {
         String findUser = "SELECT * FROM users";
 
         List<User> users = jdbcTemplate.query(findUser, (rs, rowNum) -> User.builder()
-                .id(UUID.fromString(rs.getString("id")))
+                .id(rs.getObject("id", UUID.class))
                 .username(rs.getString("username"))
                 .password(rs.getString("password"))
                 .birthDate(rs.getDate("birth_date"))

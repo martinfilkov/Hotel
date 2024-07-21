@@ -54,7 +54,7 @@ public class GuestRepositoryImpl implements GuestRepository {
 
         Optional<Guest> guest = Optional.of(
                 jdbcTemplate.query(findGuest, (rs, rowNum) -> Guest.builder()
-                                .id(UUID.fromString(rs.getString("id")))
+                                .id(rs.getObject("id", UUID.class))
                                 .firstName(rs.getString("first_name"))
                                 .lastName(rs.getString("last_name"))
                                 .phoneNumber(rs.getString("phone_number"))
@@ -85,7 +85,7 @@ public class GuestRepositoryImpl implements GuestRepository {
         String findGuests = "SELECT * FROM guests";
 
         List<Guest> guests = jdbcTemplate.query(findGuests, (rs, rowNum) -> Guest.builder()
-                .id(UUID.fromString(rs.getString("id")))
+                .id(rs.getObject("id", UUID.class))
                 .firstName(rs.getString("first_name"))
                 .lastName(rs.getString("last_name"))
                 .phoneNumber(rs.getString("phone_number"))

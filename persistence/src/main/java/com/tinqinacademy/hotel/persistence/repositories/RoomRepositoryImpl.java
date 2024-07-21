@@ -72,7 +72,7 @@ public class RoomRepositoryImpl implements RoomRepository {
                                     .map(BedSize::getByCode)
                                     .toList();
                             return Room.builder()
-                                    .id(UUID.fromString(rs.getString("id")))
+                                    .id(rs.getObject("id", UUID.class))
                                     .bathroomType(BathroomType.getByCode(rs.getString("bathroom_type")))
                                     .floor(rs.getInt("floor"))
                                     .roomNumber(rs.getString("room_number"))
@@ -123,7 +123,7 @@ public class RoomRepositoryImpl implements RoomRepository {
                                     .map(BedSize::getByCode)
                                     .toList();
                             return Room.builder()
-                                    .id(UUID.fromString(rs.getString("id")))
+                                    .id(rs.getObject("id", UUID.class))
                                     .bathroomType(BathroomType.getByCode(rs.getString("bathroom_type")))
                                     .floor(rs.getInt("floor"))
                                     .roomNumber(rs.getString("room_number"))
