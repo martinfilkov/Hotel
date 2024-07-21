@@ -9,11 +9,12 @@ import com.tinqinacademy.hotel.api.operations.hotel.roombyid.RoomByIdInput;
 import com.tinqinacademy.hotel.api.operations.hotel.roombyid.RoomByIdOutput;
 import com.tinqinacademy.hotel.api.operations.hotel.unbookroom.UnbookRoomInput;
 import com.tinqinacademy.hotel.api.operations.hotel.unbookroom.UnbookRoomOutput;
+import com.tinqinacademy.hotel.persistence.entity.Reservation;
 import com.tinqinacademy.hotel.persistence.entity.Room;
+import com.tinqinacademy.hotel.persistence.repositories.ReservationRepository;
 import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -25,10 +26,12 @@ import java.util.UUID;
 @Service
 public class HotelServiceImpl implements HotelService {
     private final RoomRepository roomRepository;
+    private final ReservationRepository reservationRepository;
 
     @Autowired
-    public HotelServiceImpl(RoomRepository roomRepository) {
+    public HotelServiceImpl(RoomRepository roomRepository, ReservationRepository reservationRepository) {
         this.roomRepository = roomRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     @Override
@@ -69,6 +72,15 @@ public class HotelServiceImpl implements HotelService {
     @Override
     public BookRoomOutput bookRoom(final BookRoomInput input) {
         log.info("Start bookRoom input: {}", input);
+        Reservation reservation = Reservation.builder()
+                .startDate(input.getStartDate())
+                .endDate(input.getEndDate())
+                .roomId(UUID.fromString(input.getRoomId()))
+                .userId(UUID.fromString(input.getUserId()))
+                .build();
+
+        reservationRepository.save(reservation);
+
         BookRoomOutput output = new BookRoomOutput();
         log.info("End bookRoom output: {}", output);
         return output;
@@ -77,6 +89,7 @@ public class HotelServiceImpl implements HotelService {
     @Override
     public UnbookRoomOutput unbookRoom(UnbookRoomInput input) {
         log.info("Start unbookRoom input: {}", input);
+        reservationRepository.delete(UUID.fromString(input.getBookingId()));
         UnbookRoomOutput output = new UnbookRoomOutput();
         log.info("End unbookRoom output: {}", output);
         return output;
