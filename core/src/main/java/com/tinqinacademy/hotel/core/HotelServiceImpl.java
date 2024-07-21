@@ -13,6 +13,7 @@ import com.tinqinacademy.hotel.persistence.entity.Reservation;
 import com.tinqinacademy.hotel.persistence.entity.Room;
 import com.tinqinacademy.hotel.persistence.repositories.ReservationRepository;
 import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
+import com.tinqinacademy.hotel.persistence.repositories.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,11 +28,13 @@ import java.util.UUID;
 public class HotelServiceImpl implements HotelService {
     private final RoomRepository roomRepository;
     private final ReservationRepository reservationRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public HotelServiceImpl(RoomRepository roomRepository, ReservationRepository reservationRepository) {
+    public HotelServiceImpl(RoomRepository roomRepository, ReservationRepository reservationRepository, UserRepository userRepository) {
         this.roomRepository = roomRepository;
         this.reservationRepository = reservationRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -72,6 +75,15 @@ public class HotelServiceImpl implements HotelService {
     @Override
     public BookRoomOutput bookRoom(final BookRoomInput input) {
         log.info("Start bookRoom input: {}", input);
+
+        if(roomRepository.findById(UUID.fromString(input.getRoomId())).isEmpty()){
+            throw new NotFoundException("Room with id " + input.getRoomId() + " not found");
+        }
+
+        if(userRepository.findById(UUID.fromString(input.getUserId())).isEmpty()){
+            throw new NotFoundException("User with id " + input.getUserId() + " not found");
+        }
+
         Reservation reservation = Reservation.builder()
                 .startDate(input.getStartDate())
                 .endDate(input.getEndDate())

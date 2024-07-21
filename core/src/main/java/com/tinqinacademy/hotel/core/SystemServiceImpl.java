@@ -25,7 +25,7 @@ import java.util.UUID;
 
 @Slf4j
 @Service
-public class SystemServiceImpl implements SystemService{
+public class SystemServiceImpl implements SystemService {
     private final RoomRepository roomRepository;
 
     @Autowired
@@ -67,6 +67,17 @@ public class SystemServiceImpl implements SystemService{
     public CreateRoomOutput createRoom(CreateRoomInput input) {
         log.info("Start createRoom input: {}", input);
 
+        if (BathroomType.getByCode(input.getBathRoomType()).equals(BathroomType.UNKNOWN)) {
+            throw new NotFoundException("Bathroom type " + input.getBathRoomType() + " not found");
+        }
+
+        input.getBedSizes().forEach(bedSize ->
+        {
+            if (BedSize.getByCode(bedSize).equals(BedSize.UNKNOWN)) {
+                throw new NotFoundException("Bed size " + bedSize + " not found");
+            }
+        });
+
         Room room = Room.builder()
                 .bathroomType(BathroomType.getByCode(input.getBathRoomType()))
                 .floor(input.getFloor())
@@ -88,6 +99,17 @@ public class SystemServiceImpl implements SystemService{
     @Override
     public UpdateRoomOutput updateRoom(UpdateRoomInput input) {
         log.info("Start updateRoom input: {}", input);
+
+        if (BathroomType.getByCode(input.getBathRoomType()).equals(BathroomType.UNKNOWN)) {
+            throw new NotFoundException("Bathroom type " + input.getBathRoomType() + " not found");
+        }
+
+        input.getBedSizes().forEach(bedSize ->
+        {
+            if (BedSize.getByCode(bedSize).equals(BedSize.UNKNOWN)) {
+                throw new NotFoundException("Bed size " + bedSize + " not found");
+            }
+        });
 
         Room room = Room.builder()
                 .id(UUID.fromString(input.getRoomId()))
