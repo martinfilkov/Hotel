@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -46,8 +47,8 @@ public class ReservationRepositoryImpl implements ReservationRepository {
         Optional<Reservation> reservation = Optional.of(
                 jdbcTemplate.query(findReservation, (rs, rowNum) -> Reservation.builder()
                                 .id(rs.getObject("id", UUID.class))
-                                .startDate(rs.getDate("start_date"))
-                                .endDate(rs.getDate("end_date"))
+                                .startDate(rs.getObject("start_date", LocalDate.class))
+                                .endDate(rs.getObject("end_date", LocalDate.class))
                                 .roomId(rs.getObject("room_id", UUID.class))
                                 .userId(rs.getObject("user_id", UUID.class))
                                 .build())
@@ -75,8 +76,8 @@ public class ReservationRepositoryImpl implements ReservationRepository {
         List<Reservation> reservations =
                 jdbcTemplate.query(findReservations, (rs, rowNum) -> Reservation.builder()
                                 .id(rs.getObject("id", UUID.class))
-                                .startDate(rs.getDate("start_date"))
-                                .endDate(rs.getDate("end_date"))
+                                .startDate(rs.getObject("start_date", LocalDate.class))
+                                .endDate(rs.getObject("end_date", LocalDate.class))
                                 .roomId(rs.getObject("room_id", UUID.class))
                                 .userId(rs.getObject("user_id", UUID.class))
                                 .build());

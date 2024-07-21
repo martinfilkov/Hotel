@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -50,7 +51,7 @@ public class UserRepositoryImpl implements UserRepository {
                                 .id(rs.getObject("id", UUID.class))
                                 .username(rs.getString("username"))
                                 .password(rs.getString("password"))
-                                .birthDate(rs.getDate("birth_date"))
+                                .birthDate(rs.getObject("birth_date", LocalDate.class))
                                 .phoneNumber(rs.getString("phone_number"))
                                 .email(rs.getString("email"))
                                 .build(), id)
@@ -79,7 +80,7 @@ public class UserRepositoryImpl implements UserRepository {
                 .id(rs.getObject("id", UUID.class))
                 .username(rs.getString("username"))
                 .password(rs.getString("password"))
-                .birthDate(rs.getDate("birth_date"))
+                .birthDate(rs.getObject("birth_date", LocalDate.class))
                 .phoneNumber(rs.getString("phone_number"))
                 .email(rs.getString("email"))
                 .build());

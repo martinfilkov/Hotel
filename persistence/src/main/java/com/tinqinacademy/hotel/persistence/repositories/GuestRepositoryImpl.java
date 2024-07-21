@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -61,7 +62,7 @@ public class GuestRepositoryImpl implements GuestRepository {
                                 .idCardValidity(rs.getString("id_card_validity"))
                                 .idCardIssueAuthority(rs.getString("id_card_issue_authority"))
                                 .idCardIssueDate(rs.getString("id_card_issue_date"))
-                                .birthDate(rs.getDate("birth_date"))
+                                .birthDate(rs.getObject("birth_date", LocalDate.class))
                                 .build(), id)
                         .stream()
                         .findFirst()
@@ -92,7 +93,7 @@ public class GuestRepositoryImpl implements GuestRepository {
                 .idCardValidity(rs.getString("id_card_validity"))
                 .idCardIssueAuthority(rs.getString("id_card_issue_authority"))
                 .idCardIssueDate(rs.getString("id_card_issue_date"))
-                .birthDate(rs.getDate("birth_date"))
+                .birthDate(rs.getObject("birth_date", LocalDate.class))
                 .build());
 
         return guests;

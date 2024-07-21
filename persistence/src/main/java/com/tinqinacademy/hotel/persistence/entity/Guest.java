@@ -2,7 +2,7 @@ package com.tinqinacademy.hotel.persistence.entity;
 
 import lombok.*;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -11,7 +11,7 @@ import java.util.UUID;
 @Setter
 @Builder
 @ToString
-public class Guest implements Entity{
+public class Guest implements Entity {
     private UUID id;
     private String firstName;
     private String lastName;
@@ -19,5 +19,5 @@ public class Guest implements Entity{
     private String idCardValidity;
     private String idCardIssueAuthority;
     private String idCardIssueDate;
-    private Date birthDate;
+    private LocalDate birthDate;
 }

@@ -2,7 +2,7 @@ package com.tinqinacademy.hotel.persistence.entity;
 
 import lombok.*;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -16,6 +16,6 @@ public class User implements Entity{
     private String username;
     private String email;
     private String password;
-    private Date birthDate;
+    private LocalDate birthDate;
     private String phoneNumber;
 }
