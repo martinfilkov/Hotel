@@ -55,9 +55,9 @@ public class HotelController {
             @ApiResponse(responseCode = "404", description = "Room not found")
     })
     @GetMapping(URLMapping.GET_ROOM)
-    public ResponseEntity<RoomByIdOutput> getRoom(@PathVariable String id){
+    public ResponseEntity<RoomByIdOutput> getRoom(@PathVariable String roomId){
         RoomByIdInput input = RoomByIdInput.builder()
-                .id(id)
+                .id(roomId)
                 .build();
 
         RoomByIdOutput output = hotelService.getRoom(input);
@@ -70,10 +70,10 @@ public class HotelController {
             @ApiResponse(responseCode = "403", description = "User not authorized")
     })
     @PostMapping(URLMapping.BOOK_ROOM)
-    public ResponseEntity<BookRoomOutput> bookRoom(@PathVariable String id,
+    public ResponseEntity<BookRoomOutput> bookRoom(@PathVariable String roomId,
                                                    @Valid @RequestBody BookRoomInput request){
         BookRoomInput input = request.toBuilder()
-                .roomId(id)
+                .roomId(roomId)
                 .build();
 
         return new ResponseEntity<>(hotelService.bookRoom(input), HttpStatus.CREATED);
@@ -85,9 +85,9 @@ public class HotelController {
             @ApiResponse(responseCode = "404", description = "Room not found")
     })
     @DeleteMapping(URLMapping.UNBOOK_ROOM)
-    public ResponseEntity<UnbookRoomOutput> unbookRoom(@PathVariable String id){
+    public ResponseEntity<UnbookRoomOutput> unbookRoom(@PathVariable String bookingId){
         UnbookRoomInput input = UnbookRoomInput.builder()
-                .bookingId(id)
+                .bookingId(bookingId)
                 .build();
 
         UnbookRoomOutput output = hotelService.unbookRoom(input);

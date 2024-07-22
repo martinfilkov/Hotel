@@ -109,6 +109,13 @@ public class HotelServiceImpl implements HotelService {
     @Override
     public UnbookRoomOutput unbookRoom(UnbookRoomInput input) {
         log.info("Start unbookRoom input: {}", input);
+        Optional<Reservation> reservationOptional =
+                reservationRepository.findById(UUID.fromString(input.getBookingId()));
+
+        if(reservationOptional.isEmpty()){
+            throw new NotFoundException("Reservation with id " + input.getBookingId() + " does not exist");
+        }
+
         reservationRepository.delete(UUID.fromString(input.getBookingId()));
         UnbookRoomOutput output = new UnbookRoomOutput();
         log.info("End unbookRoom output: {}", output);

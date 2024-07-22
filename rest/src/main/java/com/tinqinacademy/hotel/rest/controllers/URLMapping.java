@@ -3,9 +3,9 @@ package com.tinqinacademy.hotel.rest.controllers;
 public class URLMapping {
     //Hotel
     public final static String GET_IDS = "/api/hotel/rooms";
-    public final static String GET_ROOM = "/api/hotel/{id}";
-    public final static String BOOK_ROOM = "/api/hotel/{id}";
-    public final static String UNBOOK_ROOM = "/api/hotel/{id}";
+    public final static String GET_ROOM = "/api/hotel/{roomId}";
+    public final static String BOOK_ROOM = "/api/hotel/{roomId}";
+    public final static String UNBOOK_ROOM = "/api/hotel/{bookingId}";
 
     //System
     public final static String REGISTER_VISITOR = "/api/system/register";
