@@ -1,6 +1,6 @@
 package com.tinqinacademy.hotel.api.operations.exception;
 
-public class NotAvailableException extends RuntimeException{
+public class NotAvailableException extends CustomException {
     public NotAvailableException(String message) {
         super(message);
     }
