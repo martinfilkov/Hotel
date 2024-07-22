@@ -1,11 +1,11 @@
 package com.tinqinacademy.hotel.api.operations.system.partialupdate;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,12 +17,9 @@ public class PartialUpdateRoomInput {
     @JsonIgnore
     private String roomId;
 
-    private String bedSize;
+    private List<String> bedSizes;
 
     private String bathRoomType;
-
-    @Max(value = 20, message = "There cannot be more that 20 floors")
-    private Integer floor;
 
     private String roomNumber;
 

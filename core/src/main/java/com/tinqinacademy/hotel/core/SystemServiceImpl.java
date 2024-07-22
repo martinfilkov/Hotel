@@ -100,6 +100,10 @@ public class SystemServiceImpl implements SystemService {
     public UpdateRoomOutput updateRoom(UpdateRoomInput input) {
         log.info("Start updateRoom input: {}", input);
 
+        if (roomRepository.findById(UUID.fromString(input.getRoomId())).isEmpty()) {
+            throw new NotFoundException("Room with id " + input.getRoomId() + " not found");
+        }
+
         if (BathroomType.getByCode(input.getBathRoomType()).equals(BathroomType.UNKNOWN)) {
             throw new NotFoundException("Bathroom type " + input.getBathRoomType() + " not found");
         }
@@ -144,6 +148,10 @@ public class SystemServiceImpl implements SystemService {
     @Override
     public DeleteRoomOutput deleteRoom(DeleteRoomInput input) {
         log.info("Start deleteRoom input: {}", input);
+
+        if (roomRepository.findById(UUID.fromString(input.getId())).isEmpty()) {
+            throw new NotFoundException("Room with id " + input.getId() + " not found");
+        }
 
         roomRepository.delete(UUID.fromString(input.getId()));
 
