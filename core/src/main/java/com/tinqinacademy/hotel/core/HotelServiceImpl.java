@@ -1,5 +1,6 @@
 package com.tinqinacademy.hotel.core;
 
+import com.tinqinacademy.hotel.api.operations.exception.NotAvailableException;
 import com.tinqinacademy.hotel.api.operations.exception.NotFoundException;
 import com.tinqinacademy.hotel.api.operations.hotel.bookroom.BookRoomInput;
 import com.tinqinacademy.hotel.api.operations.hotel.bookroom.BookRoomOutput;
@@ -82,6 +83,13 @@ public class HotelServiceImpl implements HotelService {
 
         if(userRepository.findById(UUID.fromString(input.getUserId())).isEmpty()){
             throw new NotFoundException("User with id " + input.getUserId() + " not found");
+        }
+
+        if(reservationRepository.existsByRoomIdAndDateRange(
+                UUID.fromString(input.getRoomId()),
+                input.getStartDate(),
+                input.getEndDate())){
+            throw new NotAvailableException("Room with id " + input.getRoomId() + " is not available");
         }
 
         Reservation reservation = Reservation.builder()

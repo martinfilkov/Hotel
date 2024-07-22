@@ -93,4 +93,16 @@ public class ReservationRepositoryImpl implements ReservationRepository {
 
         return count;
     }
+
+    @Override
+    public boolean existsByRoomIdAndDateRange(UUID roomId, LocalDate startDate, LocalDate endDate) {
+        String query = """
+                SELECT COUNT(*)
+                FROM reservations
+                WHERE room_id = ?
+                  AND (start_date <= ? AND end_date >= ?)
+                """;
+        Long count = jdbcTemplate.queryForObject(query, Long.class, roomId, endDate, startDate);
+        return count != null && count > 0;
+    }
 }

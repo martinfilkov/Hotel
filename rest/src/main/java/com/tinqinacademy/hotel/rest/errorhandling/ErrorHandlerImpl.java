@@ -2,6 +2,7 @@ package com.tinqinacademy.hotel.rest.errorhandling;
 
 import com.tinqinacademy.hotel.api.operations.exception.ErrorResponse;
 import com.tinqinacademy.hotel.api.operations.exception.ErrorWrapper;
+import com.tinqinacademy.hotel.api.operations.exception.NotAvailableException;
 import com.tinqinacademy.hotel.api.operations.exception.NotFoundException;
 import org.postgresql.util.PSQLException;
 import org.springframework.http.HttpStatus;
@@ -37,6 +38,15 @@ public class ErrorHandlerImpl implements ErrorHandler {
 
     @Override
     public ErrorWrapper handle(PSQLException ex, HttpStatus status){
+        ErrorResponse errorResponse = buildErrorResponse(status, ex.getMessage());
+
+        ErrorWrapper error = buildErrorWrapper(List.of(errorResponse));
+
+        return error;
+    }
+
+    @Override
+    public ErrorWrapper handle(NotAvailableException ex, HttpStatus status) {
         ErrorResponse errorResponse = buildErrorResponse(status, ex.getMessage());
 
         ErrorWrapper error = buildErrorWrapper(List.of(errorResponse));
