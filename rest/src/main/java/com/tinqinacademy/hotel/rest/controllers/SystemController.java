@@ -36,7 +36,7 @@ public class SystemController {
             @ApiResponse(responseCode = "403", description = "User not authorized")
     })
     @PostMapping(URLMapping.REGISTER_VISITOR)
-    public ResponseEntity<RegisterVisitorOutput> register(@Valid @RequestBody RegisterVisitorInput input){
+    public ResponseEntity<RegisterVisitorOutput> register(@Valid @RequestBody RegisterVisitorInput input) {
         RegisterVisitorOutput output = systemService.registerVisitor(input);
 
         return new ResponseEntity<>(output, HttpStatus.CREATED);
@@ -59,7 +59,7 @@ public class SystemController {
             @RequestParam("idCardIssueAuthority") String idCardIssueAuthority,
             @RequestParam("idCardIssueDate") String idCardIssueDate,
             @RequestParam("roomNumber") String roomNumber
-            ){
+    ) {
 
 
         InfoRegisterInput input = InfoRegisterInput.builder()
@@ -85,7 +85,7 @@ public class SystemController {
             @ApiResponse(responseCode = "403", description = "User not authorized")
     })
     @PostMapping(URLMapping.CREATE_ROOM)
-    public ResponseEntity<CreateRoomOutput> create(@Valid @RequestBody CreateRoomInput input){
+    public ResponseEntity<CreateRoomOutput> create(@Valid @RequestBody CreateRoomInput input) {
         CreateRoomOutput output = systemService.createRoom(input);
 
         return new ResponseEntity<>(output, HttpStatus.CREATED);
@@ -98,7 +98,7 @@ public class SystemController {
     })
     @PutMapping(URLMapping.UPDATE_ROOM)
     public ResponseEntity<UpdateRoomOutput> update(@PathVariable("roomId") String id,
-                                                   @Valid @RequestBody UpdateRoomInput request){
+                                                   @Valid @RequestBody UpdateRoomInput request) {
         UpdateRoomInput input = request.toBuilder()
                 .roomId(id)
                 .build();
@@ -113,9 +113,9 @@ public class SystemController {
             @ApiResponse(responseCode = "403", description = "User not authorized"),
             @ApiResponse(responseCode = "404", description = "Room not found")
     })
-    @PatchMapping(URLMapping.PARTIAL_UPDATE_ROOM)
+    @PatchMapping(path = URLMapping.PARTIAL_UPDATE_ROOM, consumes = "application/json-patch+json")
     public ResponseEntity<PartialUpdateRoomOutput> partialUpdate(@PathVariable("roomId") String id,
-                                                                 @Valid @RequestBody PartialUpdateRoomInput request){
+                                                                 @Valid @RequestBody PartialUpdateRoomInput request) {
         PartialUpdateRoomInput input = request.toBuilder()
                 .roomId(id)
                 .build();
@@ -131,7 +131,7 @@ public class SystemController {
             @ApiResponse(responseCode = "404", description = "Room not found")
     })
     @DeleteMapping(URLMapping.DELETE_ROOM)
-    public ResponseEntity<DeleteRoomOutput> delete(@PathVariable("roomId") String id){
+    public ResponseEntity<DeleteRoomOutput> delete(@PathVariable("roomId") String id) {
         DeleteRoomInput input = DeleteRoomInput.builder()
                 .id(id)
                 .build();

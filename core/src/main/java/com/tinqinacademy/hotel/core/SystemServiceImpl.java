@@ -1,5 +1,8 @@
 package com.tinqinacademy.hotel.core;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
 import com.tinqinacademy.hotel.api.operations.exception.NotFoundException;
 import com.tinqinacademy.hotel.api.operations.system.createroom.CreateRoomInput;
 import com.tinqinacademy.hotel.api.operations.system.createroom.CreateRoomOutput;
@@ -17,20 +20,24 @@ import com.tinqinacademy.hotel.persistence.entity.Room;
 import com.tinqinacademy.hotel.persistence.model.BathroomType;
 import com.tinqinacademy.hotel.persistence.model.BedSize;
 import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
 @Service
 public class SystemServiceImpl implements SystemService {
     private final RoomRepository roomRepository;
+    private final ObjectMapper mapper;
 
     @Autowired
-    public SystemServiceImpl(RoomRepository roomRepository) {
+    public SystemServiceImpl(RoomRepository roomRepository, ObjectMapper mapper) {
         this.roomRepository = roomRepository;
+        this.mapper = mapper;
     }
 
     @Override
@@ -133,12 +140,50 @@ public class SystemServiceImpl implements SystemService {
         return output;
     }
 
+    @SneakyThrows
     @Override
     public PartialUpdateRoomOutput partialUpdateRoom(PartialUpdateRoomInput input) {
         log.info("Start partialUpdateRoom input: {}", input);
 
+        Optional<Room> roomOptional = roomRepository.findById(UUID.fromString(input.getRoomId()));
+        if (roomOptional.isEmpty()) {
+            throw new NotFoundException("Room with id " + input.getRoomId() + " not found");
+        }
+
+        if (BathroomType.getByCode(input.getBathRoomType()).equals(BathroomType.UNKNOWN)
+                && input.getBathRoomType() != null) {
+            throw new NotFoundException("Bathroom type " + input.getBathRoomType() + " not found");
+        }
+
+        if (input.getBedSizes() != null) {
+            input.getBedSizes().forEach(bedSize ->
+            {
+                if (BedSize.getByCode(bedSize).equals(BedSize.UNKNOWN)) {
+                    throw new NotFoundException("Bed size " + bedSize + " not found");
+                }
+            });
+        }
+        Room currentRoom = roomOptional.get();
+
+        Room inputRoom = Room.builder()
+                .price(input.getPrice())
+                .roomNumber(input.getRoomNumber())
+                .bedSizes(input.getBedSizes() != null ?
+                        input.getBedSizes().stream().map(BedSize::getByCode).toList() : null)
+                .bathroomType(!BathroomType.getByCode(input.getBathRoomType()).equals(BathroomType.UNKNOWN) ?
+                        BathroomType.getByCode(input.getBathRoomType()) : null)
+                .build();
+
+        JsonNode roomNode = mapper.valueToTree(currentRoom);
+        JsonNode inputNode = mapper.valueToTree(inputRoom);
+
+        JsonMergePatch patch = JsonMergePatch.fromJson(inputNode);
+        Room updatedRoom = mapper.treeToValue(patch.apply(roomNode), Room.class);
+
+        roomRepository.update(updatedRoom);
+
         PartialUpdateRoomOutput output = PartialUpdateRoomOutput.builder()
-                .id(input.getRoomId())
+                .id(updatedRoom.getId().toString())
                 .build();
 
         log.info("End partialUpdateRoom output: {}", output);
