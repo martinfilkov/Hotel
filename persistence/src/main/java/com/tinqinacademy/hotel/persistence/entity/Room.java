@@ -1,7 +1,7 @@
 package com.tinqinacademy.hotel.persistence.entity;
 
 import com.tinqinacademy.hotel.persistence.model.BathroomType;
-import com.tinqinacademy.hotel.persistence.model.BedSize;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -14,11 +14,31 @@ import java.util.UUID;
 @Setter
 @Builder
 @ToString
-public class Room implements Entity{
+@Entity
+@Table(name = "rooms")
+public class Room {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "bathroom_type", nullable = false)
     private BathroomType bathroomType;
+
+    @Column(name = "floor", nullable = false)
     private Integer floor;
+
+    @Column(name = "room_number", nullable = false)
     private String roomNumber;
+
+    @Column(name = "price", nullable = false)
     private BigDecimal price;
-    private List<BedSize> bedSizes;
+
+    @ManyToMany
+    @JoinTable(
+            name = "room_to_bed",
+            joinColumns = @JoinColumn(name = "room_id"),
+            inverseJoinColumns = @JoinColumn(name = "bed_id")
+    )
+    private List<Bed> bedSizes;
 }

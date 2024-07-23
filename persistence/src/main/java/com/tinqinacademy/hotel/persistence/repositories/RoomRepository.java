@@ -1,9 +1,12 @@
 package com.tinqinacademy.hotel.persistence.repositories;
 
 import com.tinqinacademy.hotel.persistence.entity.Room;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
 
-public interface RoomRepository extends BaseRepository<Room, UUID>{
-    Room update(Room entity);
+@Repository
+public interface RoomRepository extends JpaRepository<Room, UUID> {
+//    Room update(Room entity);
 }

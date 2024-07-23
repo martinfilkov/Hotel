@@ -10,8 +10,10 @@ import com.tinqinacademy.hotel.api.operations.hotel.roombyid.RoomByIdInput;
 import com.tinqinacademy.hotel.api.operations.hotel.roombyid.RoomByIdOutput;
 import com.tinqinacademy.hotel.api.operations.hotel.unbookroom.UnbookRoomInput;
 import com.tinqinacademy.hotel.api.operations.hotel.unbookroom.UnbookRoomOutput;
+import com.tinqinacademy.hotel.persistence.entity.Bed;
 import com.tinqinacademy.hotel.persistence.entity.Reservation;
 import com.tinqinacademy.hotel.persistence.entity.Room;
+import com.tinqinacademy.hotel.persistence.entity.User;
 import com.tinqinacademy.hotel.persistence.repositories.ReservationRepository;
 import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
 import com.tinqinacademy.hotel.persistence.repositories.UserRepository;
@@ -64,7 +66,7 @@ public class HotelServiceImpl implements HotelService {
                 .id(room.getId().toString())
                 .floor(room.getFloor())
                 .bathroomType(room.getBathroomType())
-                .bedSizes(room.getBedSizes())
+                .bedSizes(room.getBedSizes().stream().map(Bed::getBedSize).toList())
                 .datesOccupied(new ArrayList<>())
                 .price(room.getPrice())
                 .build();
@@ -77,26 +79,30 @@ public class HotelServiceImpl implements HotelService {
     public BookRoomOutput bookRoom(final BookRoomInput input) {
         log.info("Start bookRoom input: {}", input);
 
-        if(roomRepository.findById(UUID.fromString(input.getRoomId())).isEmpty()){
+        Optional<Room> roomOptional = roomRepository.findById(UUID.fromString(input.getRoomId()));
+        if (roomOptional.isEmpty()) {
             throw new NotFoundException("Room with id " + input.getRoomId() + " not found");
         }
 
-        if(userRepository.findById(UUID.fromString(input.getUserId())).isEmpty()){
+        Optional<User> userOptional = userRepository.findById(UUID.fromString(input.getUserId()));
+        if (userOptional.isEmpty()) {
             throw new NotFoundException("User with id " + input.getUserId() + " not found");
         }
 
-        if(reservationRepository.existsByRoomIdAndDateRange(
+        if (reservationRepository.existsByRoomIdAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
                 UUID.fromString(input.getRoomId()),
                 input.getStartDate(),
-                input.getEndDate())){
-            throw new NotAvailableException("Room with id " + input.getRoomId() + " is not available");
+                input.getEndDate())) {
+            throw new NotAvailableException(
+                    "Room with id " + input.getRoomId() + " is not available within the given period"
+            );
         }
 
         Reservation reservation = Reservation.builder()
                 .startDate(input.getStartDate())
                 .endDate(input.getEndDate())
-                .roomId(UUID.fromString(input.getRoomId()))
-                .userId(UUID.fromString(input.getUserId()))
+                .room(roomOptional.get())
+                .user(userOptional.get())
                 .build();
 
         reservationRepository.save(reservation);
@@ -112,11 +118,11 @@ public class HotelServiceImpl implements HotelService {
         Optional<Reservation> reservationOptional =
                 reservationRepository.findById(UUID.fromString(input.getBookingId()));
 
-        if(reservationOptional.isEmpty()){
+        if (reservationOptional.isEmpty()) {
             throw new NotFoundException("Reservation with id " + input.getBookingId() + " does not exist");
         }
 
-        reservationRepository.delete(UUID.fromString(input.getBookingId()));
+        reservationRepository.delete(reservationOptional.get());
         UnbookRoomOutput output = new UnbookRoomOutput();
         log.info("End unbookRoom output: {}", output);
         return output;

@@ -19,6 +19,7 @@ import com.tinqinacademy.hotel.api.operations.system.updateroom.UpdateRoomOutput
 import com.tinqinacademy.hotel.persistence.entity.Room;
 import com.tinqinacademy.hotel.persistence.model.BathroomType;
 import com.tinqinacademy.hotel.persistence.model.BedSize;
+import com.tinqinacademy.hotel.persistence.repositories.BedRepository;
 import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -32,11 +33,13 @@ import java.util.UUID;
 @Service
 public class SystemServiceImpl implements SystemService {
     private final RoomRepository roomRepository;
+    private final BedRepository bedRepository;
     private final ObjectMapper mapper;
 
     @Autowired
-    public SystemServiceImpl(RoomRepository roomRepository, ObjectMapper mapper) {
+    public SystemServiceImpl(RoomRepository roomRepository, BedRepository bedRepository, ObjectMapper mapper) {
         this.roomRepository = roomRepository;
+        this.bedRepository = bedRepository;
         this.mapper = mapper;
     }
 
@@ -90,7 +93,10 @@ public class SystemServiceImpl implements SystemService {
                 .floor(input.getFloor())
                 .roomNumber(input.getRoomNumber())
                 .price(input.getPrice())
-                .bedSizes(input.getBedSizes().stream().map(BedSize::getByCode).toList())
+                .bedSizes(input.getBedSizes().stream().map(bed ->
+                                bedRepository.findByBedSize(BedSize.getByCode(bed)).orElseThrow())
+                        .toList()
+                )
                 .build();
 
         Room savedRoom = roomRepository.save(room);
@@ -107,7 +113,8 @@ public class SystemServiceImpl implements SystemService {
     public UpdateRoomOutput updateRoom(UpdateRoomInput input) {
         log.info("Start updateRoom input: {}", input);
 
-        if (roomRepository.findById(UUID.fromString(input.getRoomId())).isEmpty()) {
+        Optional<Room> roomOptional = roomRepository.findById(UUID.fromString(input.getRoomId()));
+        if (roomOptional.isEmpty()) {
             throw new NotFoundException("Room with id " + input.getRoomId() + " not found");
         }
 
@@ -124,13 +131,17 @@ public class SystemServiceImpl implements SystemService {
 
         Room room = Room.builder()
                 .id(UUID.fromString(input.getRoomId()))
-                .bedSizes(input.getBedSizes().stream().map(BedSize::getByCode).toList())
+                .bedSizes(input.getBedSizes().stream().map(bed ->
+                                bedRepository.findByBedSize(BedSize.getByCode(bed)).orElseThrow())
+                        .toList()
+                )
                 .bathroomType(BathroomType.getByCode(input.getBathRoomType()))
                 .roomNumber(input.getRoomNumber())
                 .price(input.getPrice())
+                .floor(roomOptional.get().getFloor())
                 .build();
 
-        Room updatedRoom = roomRepository.update(room);
+        Room updatedRoom = roomRepository.save(room);
 
         UpdateRoomOutput output = UpdateRoomOutput.builder()
                 .id(updatedRoom.getId().toString())
@@ -169,7 +180,9 @@ public class SystemServiceImpl implements SystemService {
                 .price(input.getPrice())
                 .roomNumber(input.getRoomNumber())
                 .bedSizes(input.getBedSizes() != null ?
-                        input.getBedSizes().stream().map(BedSize::getByCode).toList() : null)
+                        input.getBedSizes().stream().map(bed ->
+                                bedRepository.findByBedSize(BedSize.getByCode(bed)).orElseThrow()
+                        ).toList() : null)
                 .bathroomType(!BathroomType.getByCode(input.getBathRoomType()).equals(BathroomType.UNKNOWN) ?
                         BathroomType.getByCode(input.getBathRoomType()) : null)
                 .build();
@@ -180,7 +193,7 @@ public class SystemServiceImpl implements SystemService {
         JsonMergePatch patch = JsonMergePatch.fromJson(inputNode);
         Room updatedRoom = mapper.treeToValue(patch.apply(roomNode), Room.class);
 
-        roomRepository.update(updatedRoom);
+        roomRepository.save(updatedRoom);
 
         PartialUpdateRoomOutput output = PartialUpdateRoomOutput.builder()
                 .id(updatedRoom.getId().toString())
@@ -194,11 +207,13 @@ public class SystemServiceImpl implements SystemService {
     public DeleteRoomOutput deleteRoom(DeleteRoomInput input) {
         log.info("Start deleteRoom input: {}", input);
 
-        if (roomRepository.findById(UUID.fromString(input.getId())).isEmpty()) {
+        Optional<Room> roomOptional = roomRepository.findById(UUID.fromString(input.getId()));
+
+        if (roomOptional.isEmpty()) {
             throw new NotFoundException("Room with id " + input.getId() + " not found");
         }
 
-        roomRepository.delete(UUID.fromString(input.getId()));
+        roomRepository.delete(roomOptional.get());
 
         DeleteRoomOutput output = new DeleteRoomOutput();
 
