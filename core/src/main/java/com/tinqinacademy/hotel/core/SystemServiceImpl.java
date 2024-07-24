@@ -3,6 +3,7 @@ package com.tinqinacademy.hotel.core;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
+import com.tinqinacademy.hotel.api.operations.exception.InvalidInputException;
 import com.tinqinacademy.hotel.api.operations.exception.NotFoundException;
 import com.tinqinacademy.hotel.api.operations.system.createroom.CreateRoomInput;
 import com.tinqinacademy.hotel.api.operations.system.createroom.CreateRoomOutput;
@@ -12,20 +13,25 @@ import com.tinqinacademy.hotel.api.operations.system.inforregister.InfoRegisterI
 import com.tinqinacademy.hotel.api.operations.system.inforregister.InfoRegisterOutput;
 import com.tinqinacademy.hotel.api.operations.system.partialupdate.PartialUpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.system.partialupdate.PartialUpdateRoomOutput;
-import com.tinqinacademy.hotel.api.operations.system.registervisitor.RegisterVisitorInput;
+import com.tinqinacademy.hotel.api.operations.system.registervisitor.RegisterVisitorInputList;
 import com.tinqinacademy.hotel.api.operations.system.registervisitor.RegisterVisitorOutput;
 import com.tinqinacademy.hotel.api.operations.system.updateroom.UpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.system.updateroom.UpdateRoomOutput;
+import com.tinqinacademy.hotel.persistence.entity.Guest;
+import com.tinqinacademy.hotel.persistence.entity.Reservation;
 import com.tinqinacademy.hotel.persistence.entity.Room;
 import com.tinqinacademy.hotel.persistence.model.BathroomType;
 import com.tinqinacademy.hotel.persistence.model.BedSize;
 import com.tinqinacademy.hotel.persistence.repositories.BedRepository;
+import com.tinqinacademy.hotel.persistence.repositories.GuestRepository;
+import com.tinqinacademy.hotel.persistence.repositories.ReservationRepository;
 import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -34,19 +40,64 @@ import java.util.UUID;
 public class SystemServiceImpl implements SystemService {
     private final RoomRepository roomRepository;
     private final BedRepository bedRepository;
+    private final ReservationRepository reservationRepository;
+    private final GuestRepository guestRepository;
     private final ObjectMapper mapper;
 
     @Autowired
-    public SystemServiceImpl(RoomRepository roomRepository, BedRepository bedRepository, ObjectMapper mapper) {
+    public SystemServiceImpl(RoomRepository roomRepository, BedRepository bedRepository, GuestRepository guestRepository, ReservationRepository reservationRepository, ObjectMapper mapper) {
         this.roomRepository = roomRepository;
         this.bedRepository = bedRepository;
+        this.reservationRepository = reservationRepository;
+        this.guestRepository = guestRepository;
         this.mapper = mapper;
     }
 
     @Override
-    public RegisterVisitorOutput registerVisitor(RegisterVisitorInput input) {
-        log.info("Start registerVisitor input: {}", input);
+    public RegisterVisitorOutput registerVisitor(RegisterVisitorInputList inputList) {
+        log.info("Start registerVisitor input: {}", inputList);
 
+        if (inputList.getVisitors().isEmpty()) {
+            throw new InvalidInputException("Visitors is empty");
+        }
+
+        if (inputList.getEndDate().isBefore(inputList.getStartDate())) {
+            throw new InvalidInputException("Start date cannot be after end date");
+        }
+
+        Optional<Reservation> reservationOptional = reservationRepository.findAvailableRoomByRoomNumberAndPeriod(
+                inputList.getRoomNumber(),
+                inputList.getStartDate(),
+                inputList.getEndDate()
+        );
+
+        if (reservationOptional.isEmpty()) {
+            throw new InvalidInputException(
+                    "The room number you specified does not exist or is not available between the given period"
+            );
+        }
+
+        List<Guest> guestList = inputList.getVisitors().stream()
+                .map(guest -> Guest.builder()
+                        .firstName(guest.getFirstName())
+                        .lastName(guest.getLastName())
+                        .phoneNumber(guest.getPhone())
+                        .birthDate(guest.getBirthDate())
+                        .idCardValidity(guest.getIdCardValidity())
+                        .idCardIssueDate(guest.getIdCardIssueDate())
+                        .idCardIssueAuthority(guest.getIdCardIssueAuthority())
+                        .build()
+                )
+                .toList();
+
+        guestRepository.saveAll(guestList);
+
+        List<Guest> allGuests = guestRepository.findAll();
+
+        Reservation reservation = reservationOptional.get();
+        reservation.setGuests(allGuests);
+
+        reservationRepository.save(reservation);
         RegisterVisitorOutput output = new RegisterVisitorOutput();
 
         log.info("End registerVisitor output: {}", output);

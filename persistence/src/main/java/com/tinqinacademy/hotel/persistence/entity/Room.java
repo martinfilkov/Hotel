@@ -28,7 +28,7 @@ public class Room {
     @Column(name = "floor", nullable = false)
     private Integer floor;
 
-    @Column(name = "room_number", nullable = false)
+    @Column(name = "room_number", nullable = false, unique = true)
     private String roomNumber;
 
     @Column(name = "price", nullable = false)

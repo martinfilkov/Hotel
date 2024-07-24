@@ -1,5 +1,6 @@
 package com.tinqinacademy.hotel.core;
 
+import com.tinqinacademy.hotel.api.operations.exception.InvalidInputException;
 import com.tinqinacademy.hotel.api.operations.exception.NotAvailableException;
 import com.tinqinacademy.hotel.api.operations.exception.NotFoundException;
 import com.tinqinacademy.hotel.api.operations.hotel.bookroom.BookRoomInput;
@@ -89,10 +90,14 @@ public class HotelServiceImpl implements HotelService {
             throw new NotFoundException("User with id " + input.getUserId() + " not found");
         }
 
+        if (input.getEndDate().isBefore(input.getStartDate())){
+            throw new InvalidInputException("Start date cannot be after end date");
+        }
+
         if (reservationRepository.existsByRoomIdAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
                 UUID.fromString(input.getRoomId()),
-                input.getStartDate(),
-                input.getEndDate())) {
+                input.getEndDate(),
+                input.getStartDate())) {
             throw new NotAvailableException(
                     "Room with id " + input.getRoomId() + " is not available within the given period"
             );

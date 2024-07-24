@@ -2,7 +2,7 @@ package com.tinqinacademy.hotel.api.operations.system.registervisitor;
 
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
@@ -15,12 +15,6 @@ import java.time.LocalDate;
 @Builder
 @ToString
 public class RegisterVisitorInput {
-    @FutureOrPresent(message = "Date cannot be in the past")
-    private LocalDate startDate;
-
-    @FutureOrPresent(message = "Date cannot be in the past")
-    private LocalDate endDate;
-
     @NotBlank(message = "First name cannot be null")
     private String firstName;
 
@@ -41,4 +35,7 @@ public class RegisterVisitorInput {
 
     @NotBlank(message = "Card issue cannot be null")
     private String idCardIssueDate;
+
+    @PastOrPresent(message = "You cannot be born in the future")
+    private LocalDate birthDate;
 }

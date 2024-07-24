@@ -1,6 +1,7 @@
 package com.tinqinacademy.hotel.rest.errorhandling;
 
 import com.tinqinacademy.hotel.api.operations.exception.ErrorWrapper;
+import com.tinqinacademy.hotel.api.operations.exception.InvalidInputException;
 import com.tinqinacademy.hotel.api.operations.exception.NotAvailableException;
 import com.tinqinacademy.hotel.api.operations.exception.NotFoundException;
 import org.postgresql.util.PSQLException;
@@ -42,5 +43,17 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorWrapper> handleException(NotAvailableException ex) {
         ErrorWrapper error = errorHandler.handle(ex, HttpStatus.CONFLICT);
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorWrapper> handleException(InvalidInputException ex) {
+        ErrorWrapper error = errorHandler.handle(ex, HttpStatus.NOT_ACCEPTABLE);
+        return new ResponseEntity<>(error, HttpStatus.NOT_ACCEPTABLE);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorWrapper> handleException(Exception ex) {
+        ErrorWrapper error = errorHandler.handle(ex, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 }

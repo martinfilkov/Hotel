@@ -42,6 +42,15 @@ public class ErrorHandlerImpl implements ErrorHandler {
         return error;
     }
 
+    @Override
+    public ErrorWrapper handle(Exception ex, HttpStatus status) {
+        ErrorResponse errorResponse = buildErrorResponse(status, ex.getMessage());
+
+        ErrorWrapper error = buildErrorWrapper(List.of(errorResponse));
+
+        return error;
+    }
+
     private ErrorResponse buildErrorResponse(HttpStatus status, String message){
         return ErrorResponse.builder()
                 .status(status.value())

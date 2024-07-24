@@ -9,7 +9,7 @@ import com.tinqinacademy.hotel.api.operations.system.inforregister.InfoRegisterI
 import com.tinqinacademy.hotel.api.operations.system.inforregister.InfoRegisterOutput;
 import com.tinqinacademy.hotel.api.operations.system.partialupdate.PartialUpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.system.partialupdate.PartialUpdateRoomOutput;
-import com.tinqinacademy.hotel.api.operations.system.registervisitor.RegisterVisitorInput;
+import com.tinqinacademy.hotel.api.operations.system.registervisitor.RegisterVisitorInputList;
 import com.tinqinacademy.hotel.api.operations.system.registervisitor.RegisterVisitorOutput;
 import com.tinqinacademy.hotel.api.operations.system.updateroom.UpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.system.updateroom.UpdateRoomOutput;
@@ -36,7 +36,7 @@ public class SystemController {
             @ApiResponse(responseCode = "403", description = "User not authorized")
     })
     @PostMapping(URLMapping.REGISTER_VISITOR)
-    public ResponseEntity<RegisterVisitorOutput> register(@Valid @RequestBody RegisterVisitorInput input) {
+    public ResponseEntity<RegisterVisitorOutput> register(@Valid @RequestBody RegisterVisitorInputList input) {
         RegisterVisitorOutput output = systemService.registerVisitor(input);
 
         return new ResponseEntity<>(output, HttpStatus.CREATED);

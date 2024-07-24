@@ -12,4 +12,6 @@ public interface ErrorHandler {
     ErrorWrapper handle(CustomException ex, HttpStatus status);
 
     ErrorWrapper handle(PSQLException ex, HttpStatus status);
+
+    ErrorWrapper handle(Exception ex, HttpStatus status);
 }
