@@ -15,6 +15,7 @@ import com.tinqinacademy.hotel.persistence.entity.Bed;
 import com.tinqinacademy.hotel.persistence.entity.Reservation;
 import com.tinqinacademy.hotel.persistence.entity.Room;
 import com.tinqinacademy.hotel.persistence.entity.User;
+import com.tinqinacademy.hotel.persistence.model.BathroomType;
 import com.tinqinacademy.hotel.persistence.repositories.ReservationRepository;
 import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
 import com.tinqinacademy.hotel.persistence.repositories.UserRepository;
@@ -44,8 +45,23 @@ public class HotelServiceImpl implements HotelService {
     @Override
     public GetRoomIdsOutput getRoomIds(GetRoomIdsInput input) {
         log.info("Start getRoomIds input: {}", input);
+        List<Room> rooms = roomRepository.findAvailableRooms(input.getStartDate(), input.getEndDate());
+
+        List<String> availableRoomIds = rooms.stream()
+                .filter(room -> input.getBedSize()
+                        .map(size -> room.getBedSizes().stream()
+                                .anyMatch(bed -> bed.getBedSize().toString().equals(size)))
+                        .orElse(true))
+                .filter(room ->
+                        input.getBathroomType()
+                                .map(type -> BathroomType.getByCode(type) == room.getBathroomType())
+                                .orElse(true)
+                )
+                .map(room -> room.getId().toString())
+                .toList();
+
         GetRoomIdsOutput output = GetRoomIdsOutput.builder()
-                .ids(List.of("5", "7", "9"))
+                .ids(availableRoomIds)
                 .build();
 
         log.info("End getRoomIds output: {}", output);
@@ -90,7 +106,7 @@ public class HotelServiceImpl implements HotelService {
             throw new NotFoundException("User with id " + input.getUserId() + " not found");
         }
 
-        if (input.getEndDate().isBefore(input.getStartDate())){
+        if (input.getEndDate().isBefore(input.getStartDate())) {
             throw new InvalidInputException("Start date cannot be after end date");
         }
 

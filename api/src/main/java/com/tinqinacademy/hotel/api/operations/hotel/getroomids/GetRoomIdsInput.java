@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,9 +20,7 @@ public class GetRoomIdsInput {
     @FutureOrPresent(message = "Date cannot be in the past")
     private LocalDate endDate;
 
-    @NotBlank(message = "Bed size cannot be null")
-    private String bedSize;
+    private Optional<String> bedSize;
 
-    @NotBlank(message = "Bathroom type cannot be null")
-    private String bathroomType;
+    private Optional<String> bathroomType;
 }

@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,8 +35,8 @@ public class HotelController {
     public ResponseEntity<GetRoomIdsOutput> getIds(
             @RequestParam("startDate") LocalDate startDate,
             @RequestParam("endDate") LocalDate endDate,
-            @RequestParam("bedSize") String bedSize,
-            @RequestParam("bathroomType") String bathRoomType
+            @RequestParam(value = "bedSize", required = false) Optional<String> bedSize,
+            @RequestParam(value = "bathroomType", required = false) Optional<String> bathRoomType
             ){
         GetRoomIdsInput input = GetRoomIdsInput.builder()
                 .startDate(startDate)
