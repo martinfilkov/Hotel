@@ -1,4 +1,4 @@
-package com.tinqinacademy.hotel.core;
+package com.tinqinacademy.hotel.core.services;
 
 import com.tinqinacademy.hotel.api.operations.exception.InvalidInputException;
 import com.tinqinacademy.hotel.api.operations.exception.NotAvailableException;
@@ -11,7 +11,7 @@ import com.tinqinacademy.hotel.api.operations.hotel.roombyid.RoomByIdInput;
 import com.tinqinacademy.hotel.api.operations.hotel.roombyid.RoomByIdOutput;
 import com.tinqinacademy.hotel.api.operations.hotel.unbookroom.UnbookRoomInput;
 import com.tinqinacademy.hotel.api.operations.hotel.unbookroom.UnbookRoomOutput;
-import com.tinqinacademy.hotel.persistence.entity.Bed;
+import com.tinqinacademy.hotel.core.utils.DateUtils;
 import com.tinqinacademy.hotel.persistence.entity.Reservation;
 import com.tinqinacademy.hotel.persistence.entity.Room;
 import com.tinqinacademy.hotel.persistence.entity.User;
@@ -21,9 +21,10 @@ import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
 import com.tinqinacademy.hotel.persistence.repositories.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -34,12 +35,14 @@ public class HotelServiceImpl implements HotelService {
     private final RoomRepository roomRepository;
     private final ReservationRepository reservationRepository;
     private final UserRepository userRepository;
+    private final ConversionService conversionService;
 
     @Autowired
-    public HotelServiceImpl(RoomRepository roomRepository, ReservationRepository reservationRepository, UserRepository userRepository) {
+    public HotelServiceImpl(RoomRepository roomRepository, ReservationRepository reservationRepository, UserRepository userRepository, ConversionService conversionService) {
         this.roomRepository = roomRepository;
         this.reservationRepository = reservationRepository;
         this.userRepository = userRepository;
+        this.conversionService = conversionService;
     }
 
     @Override
@@ -47,7 +50,7 @@ public class HotelServiceImpl implements HotelService {
         log.info("Start getRoomIds input: {}", input);
         List<Room> rooms = roomRepository.findAvailableRooms(input.getStartDate(), input.getEndDate());
 
-        List<String> availableRoomIds = rooms.stream()
+        List<Room> availableRooms = rooms.stream()
                 .filter(room -> input.getBedSize()
                         .map(size -> room.getBedSizes().stream()
                                 .anyMatch(bed -> bed.getBedSize().toString().equals(size)))
@@ -57,12 +60,9 @@ public class HotelServiceImpl implements HotelService {
                                 .map(type -> BathroomType.getByCode(type) == room.getBathroomType())
                                 .orElse(true)
                 )
-                .map(room -> room.getId().toString())
                 .toList();
 
-        GetRoomIdsOutput output = GetRoomIdsOutput.builder()
-                .ids(availableRoomIds)
-                .build();
+        GetRoomIdsOutput output = conversionService.convert(availableRooms, GetRoomIdsOutput.class);
 
         log.info("End getRoomIds output: {}", output);
         return output;
@@ -79,13 +79,12 @@ public class HotelServiceImpl implements HotelService {
         }
 
         Room room = roomOptional.get();
-        RoomByIdOutput output = RoomByIdOutput.builder()
-                .id(room.getId().toString())
-                .floor(room.getFloor())
-                .bathroomType(room.getBathroomType())
-                .bedSizes(room.getBedSizes().stream().map(Bed::getBedSize).toList())
-                .datesOccupied(new ArrayList<>())
-                .price(room.getPrice())
+
+        List<Reservation> reservations = reservationRepository.findByRoomId(room.getId());
+        List<LocalDate> datesOccupied = DateUtils.getDatesOccupied(reservations);
+
+        RoomByIdOutput output = conversionService.convert(room, RoomByIdOutput.RoomByIdOutputBuilder.class)
+                .datesOccupied(datesOccupied)
                 .build();
 
         log.info("End getRoom output: {}", output);
@@ -119,9 +118,7 @@ public class HotelServiceImpl implements HotelService {
             );
         }
 
-        Reservation reservation = Reservation.builder()
-                .startDate(input.getStartDate())
-                .endDate(input.getEndDate())
+        Reservation reservation = conversionService.convert(input, Reservation.ReservationBuilder.class)
                 .room(roomOptional.get())
                 .user(userOptional.get())
                 .build();

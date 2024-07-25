@@ -1,4 +1,4 @@
-package com.tinqinacademy.hotel.core;
+package com.tinqinacademy.hotel.core.services;
 
 import com.tinqinacademy.hotel.api.operations.hotel.bookroom.BookRoomInput;
 import com.tinqinacademy.hotel.api.operations.hotel.bookroom.BookRoomOutput;

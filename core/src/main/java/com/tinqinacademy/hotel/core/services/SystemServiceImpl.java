@@ -1,4 +1,4 @@
-package com.tinqinacademy.hotel.core;
+package com.tinqinacademy.hotel.core.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,6 +29,7 @@ import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -42,14 +43,16 @@ public class SystemServiceImpl implements SystemService {
     private final BedRepository bedRepository;
     private final ReservationRepository reservationRepository;
     private final GuestRepository guestRepository;
+    private final ConversionService conversionService;
     private final ObjectMapper mapper;
 
     @Autowired
-    public SystemServiceImpl(RoomRepository roomRepository, BedRepository bedRepository, GuestRepository guestRepository, ReservationRepository reservationRepository, ObjectMapper mapper) {
+    public SystemServiceImpl(RoomRepository roomRepository, BedRepository bedRepository, GuestRepository guestRepository, ReservationRepository reservationRepository, ConversionService conversionService, ObjectMapper mapper) {
         this.roomRepository = roomRepository;
         this.bedRepository = bedRepository;
         this.reservationRepository = reservationRepository;
         this.guestRepository = guestRepository;
+        this.conversionService = conversionService;
         this.mapper = mapper;
     }
 
@@ -78,21 +81,10 @@ public class SystemServiceImpl implements SystemService {
         }
 
         List<Guest> guestList = inputList.getVisitors().stream()
-                .map(guest -> Guest.builder()
-                        .firstName(guest.getFirstName())
-                        .lastName(guest.getLastName())
-                        .phoneNumber(guest.getPhone())
-                        .birthDate(guest.getBirthDate())
-                        .idCardValidity(guest.getIdCardValidity())
-                        .idCardIssueDate(guest.getIdCardIssueDate())
-                        .idCardIssueAuthority(guest.getIdCardIssueAuthority())
-                        .build()
-                )
+                .map(guest -> conversionService.convert(guest, Guest.class))
                 .toList();
 
-        guestRepository.saveAll(guestList);
-
-        List<Guest> allGuests = guestRepository.findAll();
+        List<Guest> allGuests = guestRepository.saveAll(guestList);
 
         Reservation reservation = reservationOptional.get();
         reservation.setGuests(allGuests);
@@ -139,11 +131,7 @@ public class SystemServiceImpl implements SystemService {
             }
         });
 
-        Room room = Room.builder()
-                .bathroomType(BathroomType.getByCode(input.getBathRoomType()))
-                .floor(input.getFloor())
-                .roomNumber(input.getRoomNumber())
-                .price(input.getPrice())
+        Room room = conversionService.convert(input, Room.RoomBuilder.class)
                 .bedSizes(input.getBedSizes().stream().map(bed ->
                                 bedRepository.findByBedSize(BedSize.getByCode(bed)).orElseThrow())
                         .toList()
@@ -152,9 +140,7 @@ public class SystemServiceImpl implements SystemService {
 
         Room savedRoom = roomRepository.save(room);
 
-        CreateRoomOutput output = CreateRoomOutput.builder()
-                .id(savedRoom.getId().toString())
-                .build();
+        CreateRoomOutput output = conversionService.convert(savedRoom, CreateRoomOutput.class);
 
         log.info("End createRoom output: {}", output);
         return output;
@@ -180,23 +166,17 @@ public class SystemServiceImpl implements SystemService {
             }
         });
 
-        Room room = Room.builder()
-                .id(UUID.fromString(input.getRoomId()))
+        Room room = conversionService.convert(input, Room.RoomBuilder.class)
                 .bedSizes(input.getBedSizes().stream().map(bed ->
                                 bedRepository.findByBedSize(BedSize.getByCode(bed)).orElseThrow())
                         .toList()
                 )
-                .bathroomType(BathroomType.getByCode(input.getBathRoomType()))
-                .roomNumber(input.getRoomNumber())
-                .price(input.getPrice())
                 .floor(roomOptional.get().getFloor())
                 .build();
 
         Room updatedRoom = roomRepository.save(room);
 
-        UpdateRoomOutput output = UpdateRoomOutput.builder()
-                .id(updatedRoom.getId().toString())
-                .build();
+        UpdateRoomOutput output = conversionService.convert(updatedRoom, UpdateRoomOutput.class);
 
         log.info("End updateRoom output: {}", output);
         return output;
@@ -227,15 +207,11 @@ public class SystemServiceImpl implements SystemService {
         }
         Room currentRoom = roomOptional.get();
 
-        Room inputRoom = Room.builder()
-                .price(input.getPrice())
-                .roomNumber(input.getRoomNumber())
+        Room inputRoom = conversionService.convert(input, Room.RoomBuilder.class)
                 .bedSizes(input.getBedSizes() != null ?
                         input.getBedSizes().stream().map(bed ->
                                 bedRepository.findByBedSize(BedSize.getByCode(bed)).orElseThrow()
                         ).toList() : null)
-                .bathroomType(!BathroomType.getByCode(input.getBathRoomType()).equals(BathroomType.UNKNOWN) ?
-                        BathroomType.getByCode(input.getBathRoomType()) : null)
                 .build();
 
         JsonNode roomNode = mapper.valueToTree(currentRoom);
@@ -246,9 +222,7 @@ public class SystemServiceImpl implements SystemService {
 
         roomRepository.save(updatedRoom);
 
-        PartialUpdateRoomOutput output = PartialUpdateRoomOutput.builder()
-                .id(updatedRoom.getId().toString())
-                .build();
+        PartialUpdateRoomOutput output = conversionService.convert(updatedRoom, PartialUpdateRoomOutput.class);
 
         log.info("End partialUpdateRoom output: {}", output);
         return output;
