@@ -9,7 +9,7 @@ import com.tinqinacademy.hotel.api.operations.hotel.roombyid.RoomByIdInput;
 import com.tinqinacademy.hotel.api.operations.hotel.roombyid.RoomByIdOutput;
 import com.tinqinacademy.hotel.api.operations.hotel.unbookroom.UnbookRoomInput;
 import com.tinqinacademy.hotel.api.operations.hotel.unbookroom.UnbookRoomOutput;
-import com.tinqinacademy.hotel.core.HotelService;
+import com.tinqinacademy.hotel.core.services.HotelService;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;

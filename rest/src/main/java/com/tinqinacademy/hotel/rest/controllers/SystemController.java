@@ -13,7 +13,7 @@ import com.tinqinacademy.hotel.api.operations.system.registervisitor.RegisterVis
 import com.tinqinacademy.hotel.api.operations.system.registervisitor.RegisterVisitorOutput;
 import com.tinqinacademy.hotel.api.operations.system.updateroom.UpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.system.updateroom.UpdateRoomOutput;
-import com.tinqinacademy.hotel.core.SystemService;
+import com.tinqinacademy.hotel.core.services.SystemService;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
