@@ -3,8 +3,11 @@ package com.tinqinacademy.hotel.persistence.entity;
 import com.tinqinacademy.hotel.persistence.model.BathroomType;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -41,4 +44,12 @@ public class Room {
             inverseJoinColumns = @JoinColumn(name = "bed_id")
     )
     private List<Bed> bedSizes;
+
+    @CreationTimestamp
+    @Column(name = "created_on", updatable = false)
+    private LocalDateTime createdOn;
+
+    @UpdateTimestamp
+    @Column(name = "updated_on")
+    private LocalDateTime updatedOn;
 }

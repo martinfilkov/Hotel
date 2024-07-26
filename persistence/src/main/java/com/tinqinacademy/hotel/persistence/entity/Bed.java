@@ -2,12 +2,11 @@ package com.tinqinacademy.hotel.persistence.entity;
 
 import com.tinqinacademy.hotel.persistence.model.BedSize;
 import jakarta.persistence.*;
-import jakarta.persistence.Entity;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -29,4 +28,12 @@ public class Bed {
 
     @Column(name = "capacity", nullable = false)
     private Integer count;
+
+    @CreationTimestamp
+    @Column(name = "created_on", updatable = false)
+    private LocalDateTime createdOn;
+
+    @UpdateTimestamp
+    @Column(name = "updated_on")
+    private LocalDateTime updatedOn;
 }
