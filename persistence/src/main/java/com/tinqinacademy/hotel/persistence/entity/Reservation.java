@@ -3,8 +3,11 @@ package com.tinqinacademy.hotel.persistence.entity;
 import jakarta.persistence.*;
 import jakarta.persistence.Entity;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,4 +45,12 @@ public class Reservation {
             inverseJoinColumns = @JoinColumn(name = "guest_id")
     )
     private List<Guest> guests;
+
+    @CreationTimestamp
+    @Column(name = "created_on", updatable = false)
+    private LocalDateTime createdOn;
+
+    @UpdateTimestamp
+    @Column(name = "updated_on")
+    private LocalDateTime updatedOn;
 }

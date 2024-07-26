@@ -7,6 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -42,4 +43,12 @@ public class Guest {
 
     @Column(name = "birth_date", nullable = false)
     private LocalDate birthDate;
+
+    @CreationTimestamp
+    @Column(name = "created_on", updatable = false)
+    private LocalDateTime createdOn;
+
+    @UpdateTimestamp
+    @Column(name = "updated_on")
+    private LocalDateTime updatedOn;
 }
