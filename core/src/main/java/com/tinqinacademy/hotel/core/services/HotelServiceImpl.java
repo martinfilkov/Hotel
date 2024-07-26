@@ -95,10 +95,7 @@ public class HotelServiceImpl implements HotelService {
     public BookRoomOutput bookRoom(final BookRoomInput input) {
         log.info("Start bookRoom input: {}", input);
 
-        Optional<Room> roomOptional = roomRepository.findById(UUID.fromString(input.getRoomId()));
-        if (roomOptional.isEmpty()) {
-            throw new NotFoundException("Room with id " + input.getRoomId() + " not found");
-        }
+
 
         Optional<User> userOptional = userRepository.findById(UUID.fromString(input.getUserId()));
         if (userOptional.isEmpty()) {
@@ -109,17 +106,12 @@ public class HotelServiceImpl implements HotelService {
             throw new InvalidInputException("Start date cannot be after end date");
         }
 
-        if (reservationRepository.existsByRoomIdAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
-                UUID.fromString(input.getRoomId()),
-                input.getEndDate(),
-                input.getStartDate())) {
-            throw new NotAvailableException(
-                    "Room with id " + input.getRoomId() + " is not available within the given period"
-            );
-        }
+        Room room = checkIfRoomExists(input.getRoomId());
+
+        checkIfReservationExists(input);
 
         Reservation reservation = conversionService.convert(input, Reservation.ReservationBuilder.class)
-                .room(roomOptional.get())
+                .room(room)
                 .user(userOptional.get())
                 .build();
 
@@ -128,6 +120,27 @@ public class HotelServiceImpl implements HotelService {
         BookRoomOutput output = new BookRoomOutput();
         log.info("End bookRoom output: {}", output);
         return output;
+    }
+    //Add more checks
+    //Fix
+    private Room checkIfRoomExists(String roomId){
+        Optional<Room> roomOptional = roomRepository.findById(UUID.fromString(roomId));
+        if (roomOptional.isEmpty()) {
+            throw new NotFoundException("Room with id %s not found");
+        }
+        return roomOptional.get();
+    }
+    private void checkIfReservationExists(BookRoomInput input){
+        log.info("Start checkIfReservationExists with input: {}", input);
+        boolean checkIfReservationExists = reservationRepository.existsByRoomIdAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
+                UUID.fromString(input.getRoomId()),
+                input.getEndDate(),
+                input.getStartDate());
+
+        if (checkIfReservationExists) {
+            throw new NotAvailableException(String.format("Room with id %s is not available within the given period", input.getRoomId()));
+        }
+        log.info("End checkIfReservationExists no such room exists");
     }
 
     @Override
