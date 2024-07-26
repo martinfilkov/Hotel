@@ -122,6 +122,7 @@ public class HotelServiceImpl implements HotelService {
         return output;
     }
     //Add more checks
+    //Fix
     private Room checkIfRoomExists(String roomId){
         Optional<Room> roomOptional = roomRepository.findById(UUID.fromString(roomId));
         if (roomOptional.isEmpty()) {
