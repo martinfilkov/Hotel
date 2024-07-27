@@ -6,6 +6,7 @@ import com.tinqinacademy.hotel.api.operations.system.deleteroom.DeleteRoomInput;
 import com.tinqinacademy.hotel.api.operations.system.deleteroom.DeleteRoomOutput;
 import com.tinqinacademy.hotel.api.operations.system.inforregister.InfoRegisterInput;
 import com.tinqinacademy.hotel.api.operations.system.inforregister.InfoRegisterOutput;
+import com.tinqinacademy.hotel.api.operations.system.inforregister.InfoRegisterOutputList;
 import com.tinqinacademy.hotel.api.operations.system.partialupdate.PartialUpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.system.partialupdate.PartialUpdateRoomOutput;
 import com.tinqinacademy.hotel.api.operations.system.registervisitor.RegisterVisitorInputList;
@@ -16,7 +17,7 @@ import com.tinqinacademy.hotel.api.operations.system.updateroom.UpdateRoomOutput
 public interface SystemService {
     RegisterVisitorOutput registerVisitor(RegisterVisitorInputList input);
 
-    InfoRegisterOutput getRegisterInfo(InfoRegisterInput input);
+    InfoRegisterOutputList getRegisterInfo(InfoRegisterInput input);
 
     CreateRoomOutput createRoom(CreateRoomInput input);
 

@@ -7,6 +7,7 @@ import com.tinqinacademy.hotel.api.operations.system.deleteroom.DeleteRoomInput;
 import com.tinqinacademy.hotel.api.operations.system.deleteroom.DeleteRoomOutput;
 import com.tinqinacademy.hotel.api.operations.system.inforregister.InfoRegisterInput;
 import com.tinqinacademy.hotel.api.operations.system.inforregister.InfoRegisterOutput;
+import com.tinqinacademy.hotel.api.operations.system.inforregister.InfoRegisterOutputList;
 import com.tinqinacademy.hotel.api.operations.system.partialupdate.PartialUpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.system.partialupdate.PartialUpdateRoomOutput;
 import com.tinqinacademy.hotel.api.operations.system.registervisitor.RegisterVisitorInputList;
@@ -48,17 +49,17 @@ public class SystemController {
             @ApiResponse(responseCode = "404", description = "Visitor not found")
     })
     @GetMapping(URLMapping.INFO_REGISTRY)
-    public ResponseEntity<List<InfoRegisterOutput>> infoRegistry(
-            @RequestParam("startDate") LocalDate startDate,
-            @RequestParam("endDate") LocalDate endDate,
-            @RequestParam("firstName") String firstName,
-            @RequestParam("lastName") String lastName,
-            @RequestParam("phone") String phone,
-            @RequestParam("idCardNumber") String idCardNumber,
-            @RequestParam("idCardValidity") String idCardValidity,
-            @RequestParam("idCardIssueAuthority") String idCardIssueAuthority,
-            @RequestParam("idCardIssueDate") String idCardIssueDate,
-            @RequestParam("roomNumber") String roomNumber
+    public ResponseEntity<InfoRegisterOutputList> infoRegistry(
+            @RequestParam(value = "startDate") LocalDate startDate,
+            @RequestParam(value = "endDate") LocalDate endDate,
+            @RequestParam(value = "roomNumber") String roomNumber,
+            @RequestParam(value = "firstName", required = false) String firstName,
+            @RequestParam(value = "lastName", required = false) String lastName,
+            @RequestParam(value = "phone", required = false) String phone,
+            @RequestParam(value = "idCardNumber", required = false) String idCardNumber,
+            @RequestParam(value = "idCardValidity", required = false) String idCardValidity,
+            @RequestParam(value = "idCardIssueAuthority", required = false) String idCardIssueAuthority,
+            @RequestParam(value = "idCardIssueDate", required = false) String idCardIssueDate
     ) {
 
 
@@ -75,9 +76,9 @@ public class SystemController {
                 .roomNumber(roomNumber)
                 .build();
 
-        InfoRegisterOutput output = systemService.getRegisterInfo(input);
+        InfoRegisterOutputList output = systemService.getRegisterInfo(input);
 
-        return ResponseEntity.ok(List.of(output));
+        return ResponseEntity.ok(output);
     }
 
     @ApiResponses(value = {

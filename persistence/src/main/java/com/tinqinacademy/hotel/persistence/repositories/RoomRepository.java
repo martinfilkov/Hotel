@@ -13,14 +13,6 @@ import java.util.UUID;
 @Repository
 public interface RoomRepository extends JpaRepository<Room, UUID> {
     @Query(value = """
-            SELECT r.* FROM rooms r 
-            LEFT JOIN reservations res ON res.room_id = r.id
-            WHERE res.start_date <= :startDate
-            AND res.end_date >= :endDate
-            """, nativeQuery = true)
-    List<Room> findByDateRange(LocalDate startDate, LocalDate endDate);
-
-    @Query(value = """
                         SELECT r.* 
                         FROM rooms r 
                         LEFT JOIN reservations res ON r.id = res.room_id 
