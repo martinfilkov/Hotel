@@ -113,8 +113,6 @@ public class SystemServiceImpl implements SystemService {
     public InfoRegisterOutputList getRegisterInfo(InfoRegisterInput input) {
         log.info("Start getRegisterInfo input: {}", input);
 
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-
         List<Specification<Guest>> predicates = new ArrayList<>() {{
             add(guestHasFirstName(input.getFirstName()));
             add(guestHasLastName(input.getLastName()));
