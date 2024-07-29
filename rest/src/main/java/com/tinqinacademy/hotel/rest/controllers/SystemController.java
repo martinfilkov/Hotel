@@ -1,20 +1,23 @@
 package com.tinqinacademy.hotel.rest.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tinqinacademy.hotel.api.operations.system.createroom.CreateRoomInput;
 import com.tinqinacademy.hotel.api.operations.system.createroom.CreateRoomOutput;
+import com.tinqinacademy.hotel.api.operations.system.createroom.CreateRoomProcess;
 import com.tinqinacademy.hotel.api.operations.system.deleteroom.DeleteRoomInput;
 import com.tinqinacademy.hotel.api.operations.system.deleteroom.DeleteRoomOutput;
+import com.tinqinacademy.hotel.api.operations.system.deleteroom.DeleteRoomProcess;
+import com.tinqinacademy.hotel.api.operations.system.inforregister.GetRegisterInfoProcess;
 import com.tinqinacademy.hotel.api.operations.system.inforregister.InfoRegisterInput;
-import com.tinqinacademy.hotel.api.operations.system.inforregister.InfoRegisterOutput;
 import com.tinqinacademy.hotel.api.operations.system.inforregister.InfoRegisterOutputList;
+import com.tinqinacademy.hotel.api.operations.system.partialupdate.PartialUpdateProcess;
 import com.tinqinacademy.hotel.api.operations.system.partialupdate.PartialUpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.system.partialupdate.PartialUpdateRoomOutput;
 import com.tinqinacademy.hotel.api.operations.system.registervisitor.RegisterVisitorInputList;
 import com.tinqinacademy.hotel.api.operations.system.registervisitor.RegisterVisitorOutput;
+import com.tinqinacademy.hotel.api.operations.system.registervisitor.RegisterVisitorProcess;
 import com.tinqinacademy.hotel.api.operations.system.updateroom.UpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.system.updateroom.UpdateRoomOutput;
-import com.tinqinacademy.hotel.core.services.SystemService;
+import com.tinqinacademy.hotel.api.operations.system.updateroom.UpdateRoomProcess;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
@@ -24,13 +27,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 public class SystemController {
-    private final SystemService systemService;
-    private final ObjectMapper objectMapper;
+    private final CreateRoomProcess createRoomProcess;
+    private final DeleteRoomProcess deleteRoomProcess;
+    private final PartialUpdateProcess partialUpdateProcess;
+    private final RegisterVisitorProcess registerVisitorProcess;
+    private final UpdateRoomProcess updateRoomProcess;
+    private final GetRegisterInfoProcess getRegisterInfoProcess;
 
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Registered a visitor"),
@@ -38,7 +44,7 @@ public class SystemController {
     })
     @PostMapping(URLMapping.REGISTER_VISITOR)
     public ResponseEntity<RegisterVisitorOutput> register(@Valid @RequestBody RegisterVisitorInputList input) {
-        RegisterVisitorOutput output = systemService.registerVisitor(input);
+        RegisterVisitorOutput output = registerVisitorProcess.process(input);
 
         return new ResponseEntity<>(output, HttpStatus.CREATED);
     }
@@ -76,7 +82,7 @@ public class SystemController {
                 .roomNumber(roomNumber)
                 .build();
 
-        InfoRegisterOutputList output = systemService.getRegisterInfo(input);
+        InfoRegisterOutputList output = getRegisterInfoProcess.process(input);
 
         return ResponseEntity.ok(output);
     }
@@ -87,7 +93,7 @@ public class SystemController {
     })
     @PostMapping(URLMapping.CREATE_ROOM)
     public ResponseEntity<CreateRoomOutput> create(@Valid @RequestBody CreateRoomInput input) {
-        CreateRoomOutput output = systemService.createRoom(input);
+        CreateRoomOutput output = createRoomProcess.process(input);
 
         return new ResponseEntity<>(output, HttpStatus.CREATED);
     }
@@ -104,7 +110,7 @@ public class SystemController {
                 .roomId(id)
                 .build();
 
-        UpdateRoomOutput output = systemService.updateRoom(input);
+        UpdateRoomOutput output = updateRoomProcess.process(input);
 
         return ResponseEntity.ok(output);
     }
@@ -121,7 +127,7 @@ public class SystemController {
                 .roomId(id)
                 .build();
 
-        PartialUpdateRoomOutput output = systemService.partialUpdateRoom(input);
+        PartialUpdateRoomOutput output = partialUpdateProcess.process(input);
 
         return ResponseEntity.ok(output);
     }
@@ -137,7 +143,7 @@ public class SystemController {
                 .id(id)
                 .build();
 
-        DeleteRoomOutput output = systemService.deleteRoom(input);
+        DeleteRoomOutput output = deleteRoomProcess.process(input);
         return new ResponseEntity<>(output, HttpStatus.ACCEPTED);
     }
 
