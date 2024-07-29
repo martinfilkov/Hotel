@@ -41,9 +41,8 @@ public class RegisterVisitorOperation implements RegisterVisitorProcess {
                 .map(guest -> conversionService.convert(guest, Guest.class))
                 .toList();
 
-        List<Guest> allGuests = guestRepository.saveAll(guestList);
-
         Reservation reservation = getIfReservationExists(inputList);
+        List<Guest> allGuests = guestRepository.saveAll(guestList);
         reservation.setGuests(allGuests);
 
         reservationRepository.save(reservation);
