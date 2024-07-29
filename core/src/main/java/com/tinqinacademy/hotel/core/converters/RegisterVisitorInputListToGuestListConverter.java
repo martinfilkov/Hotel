@@ -18,6 +18,7 @@ public class RegisterVisitorInputListToGuestListConverter implements Converter<R
                 .lastName(input.getLastName())
                 .phoneNumber(input.getPhone())
                 .birthDate(input.getBirthDate())
+                .idCardNumber(input.getIdCardNumber())
                 .idCardValidity(input.getIdCardValidity())
                 .idCardIssueDate(input.getIdCardIssueDate())
                 .idCardIssueAuthority(input.getIdCardIssueAuthority())

@@ -32,6 +32,9 @@ public class Guest {
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
 
+    @Column(name = "id_card_number", nullable = false)
+    public String idCardNumber;
+
     @Column(name = "id_card_validity", nullable = false)
     private String idCardValidity;
 

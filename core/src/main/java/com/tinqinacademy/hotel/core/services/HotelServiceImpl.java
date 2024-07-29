@@ -95,8 +95,6 @@ public class HotelServiceImpl implements HotelService {
     public BookRoomOutput bookRoom(final BookRoomInput input) {
         log.info("Start bookRoom input: {}", input);
 
-
-
         Optional<User> userOptional = userRepository.findById(UUID.fromString(input.getUserId()));
         if (userOptional.isEmpty()) {
             throw new NotFoundException("User with id " + input.getUserId() + " not found");
@@ -121,12 +119,11 @@ public class HotelServiceImpl implements HotelService {
         log.info("End bookRoom output: {}", output);
         return output;
     }
-    //Add more checks
-    //Fix
+
     private Room checkIfRoomExists(String roomId){
         Optional<Room> roomOptional = roomRepository.findById(UUID.fromString(roomId));
         if (roomOptional.isEmpty()) {
-            throw new NotFoundException("Room with id %s not found");
+            throw new NotFoundException(String.format("Room with id %s not found", roomId));
         }
         return roomOptional.get();
     }

@@ -11,12 +11,15 @@ import com.tinqinacademy.hotel.api.operations.system.deleteroom.DeleteRoomInput;
 import com.tinqinacademy.hotel.api.operations.system.deleteroom.DeleteRoomOutput;
 import com.tinqinacademy.hotel.api.operations.system.inforregister.InfoRegisterInput;
 import com.tinqinacademy.hotel.api.operations.system.inforregister.InfoRegisterOutput;
+import com.tinqinacademy.hotel.api.operations.system.inforregister.InfoRegisterOutputList;
 import com.tinqinacademy.hotel.api.operations.system.partialupdate.PartialUpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.system.partialupdate.PartialUpdateRoomOutput;
 import com.tinqinacademy.hotel.api.operations.system.registervisitor.RegisterVisitorInputList;
 import com.tinqinacademy.hotel.api.operations.system.registervisitor.RegisterVisitorOutput;
 import com.tinqinacademy.hotel.api.operations.system.updateroom.UpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.system.updateroom.UpdateRoomOutput;
+import com.tinqinacademy.hotel.core.converters.GuestToInfoRegisterOutputConverter;
+import com.tinqinacademy.hotel.core.utils.SpecificationUtils;
 import com.tinqinacademy.hotel.persistence.entity.Guest;
 import com.tinqinacademy.hotel.persistence.entity.Reservation;
 import com.tinqinacademy.hotel.persistence.entity.Room;
@@ -26,15 +29,23 @@ import com.tinqinacademy.hotel.persistence.repositories.BedRepository;
 import com.tinqinacademy.hotel.persistence.repositories.GuestRepository;
 import com.tinqinacademy.hotel.persistence.repositories.ReservationRepository;
 import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import static com.tinqinacademy.hotel.core.specifications.GuestSpecifications.*;
 
 @Slf4j
 @Service
@@ -45,15 +56,17 @@ public class SystemServiceImpl implements SystemService {
     private final GuestRepository guestRepository;
     private final ConversionService conversionService;
     private final ObjectMapper mapper;
+    private final EntityManager entityManager;
 
     @Autowired
-    public SystemServiceImpl(RoomRepository roomRepository, BedRepository bedRepository, GuestRepository guestRepository, ReservationRepository reservationRepository, ConversionService conversionService, ObjectMapper mapper) {
+    public SystemServiceImpl(RoomRepository roomRepository, BedRepository bedRepository, GuestRepository guestRepository, ReservationRepository reservationRepository, ConversionService conversionService, ObjectMapper mapper, EntityManager entityManager) {
         this.roomRepository = roomRepository;
         this.bedRepository = bedRepository;
         this.reservationRepository = reservationRepository;
         this.guestRepository = guestRepository;
         this.conversionService = conversionService;
         this.mapper = mapper;
+        this.entityManager = entityManager;
     }
 
     @Override
@@ -97,19 +110,35 @@ public class SystemServiceImpl implements SystemService {
     }
 
     @Override
-    public InfoRegisterOutput getRegisterInfo(InfoRegisterInput input) {
+    public InfoRegisterOutputList getRegisterInfo(InfoRegisterInput input) {
         log.info("Start getRegisterInfo input: {}", input);
 
-        InfoRegisterOutput output = InfoRegisterOutput.builder()
-                .startDate(input.getStartDate())
-                .endDate(input.getEndDate())
-                .firstName(input.getFirstName())
-                .lastName(input.getLastName())
-                .phone(input.getPhone())
-                .idCardNumber(input.getIdCardNumber())
-                .idCardIssueAuthority(input.getIdCardIssueAuthority())
-                .idCardValidity(input.getIdCardValidity())
-                .idCardIssueDate(input.getIdCardIssueDate())
+        List<Specification<Guest>> predicates = new ArrayList<>() {{
+            add(guestHasFirstName(input.getFirstName()));
+            add(guestHasLastName(input.getLastName()));
+            add(guestHasPhoneNumber(input.getPhone()));
+            add(guestHasIdCardNumber(input.getIdCardNumber()));
+            add(guestHasIdCardValidity(input.getIdCardValidity()));
+            add(guestHasIdCardIssueDate(input.getIdCardIssueDate()));
+            add(guestHasIdCardIssueAuthority(input.getIdCardIssueAuthority()));
+        }};
+
+        Specification<Guest> specification = SpecificationUtils.combineSpecifications(predicates);
+        List<Guest> specifiedGuests = guestRepository.findAll(specification);
+        List<Guest> allGuests = guestRepository.findByDateRangeAndRoomNumber(
+                input.getStartDate(), input.getEndDate(), input.getRoomNumber()
+        );
+
+        List<Guest> filteredGuests = allGuests.stream()
+                .filter(specifiedGuests::contains)
+                .toList();
+
+        List<InfoRegisterOutput> guestInfo = filteredGuests.stream()
+                .map(guest -> conversionService.convert(guest, InfoRegisterOutput.class))
+                .toList();
+
+        InfoRegisterOutputList output = InfoRegisterOutputList.builder()
+                .visitors(guestInfo)
                 .build();
 
         log.info("End getRegisterInfo output: {}", output);
