@@ -123,7 +123,7 @@ public class HotelServiceImpl implements HotelService {
     private Room checkIfRoomExists(String roomId){
         Optional<Room> roomOptional = roomRepository.findById(UUID.fromString(roomId));
         if (roomOptional.isEmpty()) {
-            throw new NotFoundException("Room with id %s not found");
+            throw new NotFoundException(String.format("Room with id %s not found", roomId));
         }
         return roomOptional.get();
     }
