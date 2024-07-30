@@ -23,5 +23,5 @@ public class RegisterVisitorInputList {
     @NotBlank(message = "Room number is required")
     private String roomNumber;
 
-    List<RegisterVisitorInput> visitors;
+    private List<RegisterVisitorInput> visitors;
 }

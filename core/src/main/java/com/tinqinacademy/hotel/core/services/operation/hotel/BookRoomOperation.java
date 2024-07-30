@@ -39,11 +39,11 @@ public class BookRoomOperation implements BookRoomProcess {
     @Override
     public BookRoomOutput process(final BookRoomInput input) {
         log.info("Start bookRoom input: {}", input);
-        User user = getIfUserExists(input);
-        Room room = getIfRoomExists(input);
-
         checkIfReservationPeriodIsValid(input);
         checkIfReservationExists(input);
+
+        User user = getIfUserExists(input);
+        Room room = getIfRoomExists(input);
 
         Reservation reservation = conversionService.convert(input, Reservation.ReservationBuilder.class)
                 .room(room)
@@ -61,7 +61,7 @@ public class BookRoomOperation implements BookRoomProcess {
         log.info("Try to get a user with user id: {}", input.getUserId());
         Optional<User> userOptional = userRepository.findById(UUID.fromString(input.getUserId()));
         if (userOptional.isEmpty()) {
-            throw new NotFoundException("User with id " + input.getUserId() + " not found");
+            throw new NotFoundException(String.format("User with id %s not found", input.getUserId()));
         }
 
         log.info("Found user with user id: {}", input.getUserId());

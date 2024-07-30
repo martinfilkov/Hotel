@@ -4,6 +4,7 @@ import com.tinqinacademy.hotel.api.operations.exception.NotFoundException;
 import com.tinqinacademy.hotel.api.operations.system.createroom.CreateRoomInput;
 import com.tinqinacademy.hotel.api.operations.system.createroom.CreateRoomOutput;
 import com.tinqinacademy.hotel.api.operations.system.createroom.CreateRoomProcess;
+import com.tinqinacademy.hotel.api.operations.system.partialupdate.PartialUpdateRoomInput;
 import com.tinqinacademy.hotel.persistence.entity.Room;
 import com.tinqinacademy.hotel.persistence.model.BathroomType;
 import com.tinqinacademy.hotel.persistence.model.BedSize;
@@ -13,6 +14,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -34,13 +39,10 @@ public class CreateRoomOperation implements CreateRoomProcess {
 
         checkIfBathroomIsValid(input);
 
-        input.getBedSizes().forEach(this::checkIfBedSizeIsValid);
+        List<BedSize> bedSizes = getBedSizesIfValid(input);
 
         Room room = conversionService.convert(input, Room.RoomBuilder.class)
-                .bedSizes(input.getBedSizes().stream().map(bed ->
-                                bedRepository.findByBedSize(BedSize.getByCode(bed)).orElseThrow())
-                        .toList()
-                )
+                .bedSizes(bedRepository.findAllByBedSizeIn(bedSizes))
                 .build();
 
         Room savedRoom = roomRepository.save(room);
@@ -60,9 +62,26 @@ public class CreateRoomOperation implements CreateRoomProcess {
         log.info("Bathroom type is valid");
     }
 
-    private void checkIfBedSizeIsValid(String bedSize){
-        if (BedSize.getByCode(bedSize).equals(BedSize.UNKNOWN)) {
+    private List<BedSize> getBedSizesIfValid(CreateRoomInput input) {
+        log.info("Check if each bed size is valid and not null");
+        List<BedSize> bedSizes = new ArrayList<>();
+        if (input.getBedSizes() != null
+                && !ObjectUtils.isEmpty(input.getBedSizes())) {
+            bedSizes = input.getBedSizes()
+                    .stream()
+                    .map(this::checkIfBedSizeIsValid)
+                    .toList();
+        }
+        log.info("Bed sizes are valid");
+        return bedSizes;
+    }
+
+    private BedSize checkIfBedSizeIsValid(String bedSize) {
+        BedSize bed = BedSize.getByCode(bedSize);
+        if (bed.equals(BedSize.UNKNOWN)) {
             throw new NotFoundException("Bed size " + bedSize + " not found");
+        } else {
+            return bed;
         }
     }
 }

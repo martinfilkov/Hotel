@@ -37,7 +37,9 @@ public class RegisterVisitorOperation implements RegisterVisitorProcess {
         checkIfVisitorsNotEmpty(inputList);
         checkIfReservationPeriodIsValid(inputList);
 
-        List<Guest> guestList = inputList.getVisitors().stream()
+        List<Guest> guestList = inputList
+                .getVisitors()
+                .stream()
                 .map(guest -> conversionService.convert(guest, Guest.class))
                 .toList();
 
@@ -46,7 +48,7 @@ public class RegisterVisitorOperation implements RegisterVisitorProcess {
         reservation.setGuests(allGuests);
 
         reservationRepository.save(reservation);
-        RegisterVisitorOutput output = new RegisterVisitorOutput();
+        RegisterVisitorOutput output = RegisterVisitorOutput.builder().build();
 
         log.info("End registerVisitor output: {}", output);
         return output;
