@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Component
@@ -26,6 +27,15 @@ public class BedSizeInitializer implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         List<Bed> beds = bedRepository.findAll();
         List<BedSize> currentBedSizes = beds.stream().map(Bed::getBedSize).toList();
+        Set<BedSize> validBedSizes = EnumSet.allOf(BedSize.class);
+
+        currentBedSizes.stream()
+                .filter(bedSize -> !validBedSizes.contains(bedSize))
+                .forEach(bedSize -> {
+                    bedRepository.deleteByBedSize(bedSize);
+                    log.info("Removed invalid bed size: {}", bedSize);
+                });
+
         log.info("Current bed sizes in the database: {}", currentBedSizes);
 
         EnumSet.allOf(BedSize.class).stream()
