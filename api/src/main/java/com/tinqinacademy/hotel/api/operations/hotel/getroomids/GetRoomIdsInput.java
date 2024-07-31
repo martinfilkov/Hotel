@@ -1,7 +1,7 @@
 package com.tinqinacademy.hotel.api.operations.hotel.getroomids;
 
+import com.tinqinacademy.hotel.api.operations.base.OperationInput;
 import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -13,7 +13,7 @@ import java.util.Optional;
 @Setter
 @Builder
 @ToString
-public class GetRoomIdsInput {
+public class GetRoomIdsInput implements OperationInput {
     @FutureOrPresent(message = "Date cannot be in the past")
     private LocalDate startDate;
 

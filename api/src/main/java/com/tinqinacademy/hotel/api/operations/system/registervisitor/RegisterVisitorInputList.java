@@ -1,5 +1,6 @@
 package com.tinqinacademy.hotel.api.operations.system.registervisitor;
 
+import com.tinqinacademy.hotel.api.operations.base.OperationInput;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -13,7 +14,7 @@ import java.util.List;
 @Setter
 @Builder
 @ToString
-public class RegisterVisitorInputList {
+public class RegisterVisitorInputList implements OperationInput {
     @FutureOrPresent(message = "Date cannot be in the past")
     private LocalDate startDate;
 

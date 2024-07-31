@@ -1,6 +1,7 @@
 package com.tinqinacademy.hotel.api.operations.system.partialupdate;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.tinqinacademy.hotel.api.operations.base.OperationInput;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 
@@ -13,7 +14,7 @@ import java.util.List;
 @Setter
 @Builder(toBuilder = true)
 @ToString
-public class PartialUpdateRoomInput {
+public class PartialUpdateRoomInput implements OperationInput {
     @JsonIgnore
     private String roomId;
 

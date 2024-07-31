@@ -21,4 +21,6 @@ public interface RoomRepository extends JpaRepository<Room, UUID> {
                         WHERE res.room_id IS NULL;
             """, nativeQuery = true)
     List<Room> findAvailableRooms(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+
+    Boolean existsByRoomNumber(String roomNumber);
 }

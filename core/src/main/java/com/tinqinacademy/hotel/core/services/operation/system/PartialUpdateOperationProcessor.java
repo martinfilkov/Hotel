@@ -3,20 +3,27 @@ package com.tinqinacademy.hotel.core.services.operation.system;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
+import com.tinqinacademy.hotel.api.operations.base.Errors;
 import com.tinqinacademy.hotel.api.operations.exception.NotFoundException;
-import com.tinqinacademy.hotel.api.operations.system.partialupdate.PartialUpdateProcess;
+import com.tinqinacademy.hotel.api.operations.system.partialupdate.PartialUpdateOperation;
 import com.tinqinacademy.hotel.api.operations.system.partialupdate.PartialUpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.system.partialupdate.PartialUpdateRoomOutput;
+import com.tinqinacademy.hotel.core.services.operation.BaseOperationProcessor;
+import com.tinqinacademy.hotel.core.utils.ErrorMapper;
 import com.tinqinacademy.hotel.persistence.entity.Bed;
 import com.tinqinacademy.hotel.persistence.entity.Room;
 import com.tinqinacademy.hotel.persistence.model.BathroomType;
 import com.tinqinacademy.hotel.persistence.model.BedSize;
 import com.tinqinacademy.hotel.persistence.repositories.BedRepository;
 import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
+import io.vavr.control.Either;
+import io.vavr.control.Try;
+import jakarta.validation.Validator;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -25,51 +32,70 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static io.vavr.API.*;
+import static io.vavr.Predicates.instanceOf;
+
 @Slf4j
 @Service
-public class PartialUpdateOperation implements PartialUpdateProcess {
+public class PartialUpdateOperationProcessor extends BaseOperationProcessor implements PartialUpdateOperation {
     private final RoomRepository roomRepository;
     private final BedRepository bedRepository;
-    private final ConversionService conversionService;
     private final ObjectMapper mapper;
 
     @Autowired
-    public PartialUpdateOperation(RoomRepository roomRepository, BedRepository bedRepository, ConversionService conversionService, ObjectMapper mapper) {
+    public PartialUpdateOperationProcessor(RoomRepository roomRepository,
+                                           BedRepository bedRepository,
+                                           ConversionService conversionService,
+                                           ObjectMapper mapper,
+                                           Validator validator,
+                                           ErrorMapper errorMapper) {
+        super(conversionService, validator, errorMapper);
         this.roomRepository = roomRepository;
         this.bedRepository = bedRepository;
-        this.conversionService = conversionService;
         this.mapper = mapper;
     }
 
     @SneakyThrows
     @Override
-    public PartialUpdateRoomOutput process(PartialUpdateRoomInput input) {
-        log.info("Start partialUpdateRoom input: {}", input);
+    public Either<Errors, PartialUpdateRoomOutput> process(PartialUpdateRoomInput input) {
+        return validateInput(input)
+                .flatMap(this::partialUpdateRoom);
+    }
 
-        checkIfBathroomIsValid(input);
+    private Either<Errors, PartialUpdateRoomOutput> partialUpdateRoom(PartialUpdateRoomInput input){
+        return Try.of(() -> {
+                    log.info("Start partialUpdateRoom input: {}", input);
 
-        List<BedSize> bedSizes = getBedSizesIfValid(input);
+                    checkIfBathroomIsValid(input);
 
-        Room currentRoom = getIfRoomExists(input);
+                    List<BedSize> bedSizes = getBedSizesIfValid(input);
 
-        List<Bed> beds = bedRepository.findAllByBedSizeIn(bedSizes);
+                    Room currentRoom = getIfRoomExists(input);
 
-        Room inputRoom = conversionService.convert(input, Room.RoomBuilder.class)
-                .bedSizes(beds)
-                .build();
+                    List<Bed> beds = bedRepository.findAllByBedSizeIn(bedSizes);
 
-        JsonNode roomNode = mapper.valueToTree(currentRoom);
-        JsonNode inputNode = mapper.valueToTree(inputRoom);
+                    Room inputRoom = conversionService.convert(input, Room.RoomBuilder.class)
+                            .bedSizes(beds)
+                            .build();
 
-        JsonMergePatch patch = JsonMergePatch.fromJson(inputNode);
-        Room updatedRoom = mapper.treeToValue(patch.apply(roomNode), Room.class);
+                    JsonNode roomNode = mapper.valueToTree(currentRoom);
+                    JsonNode inputNode = mapper.valueToTree(inputRoom);
 
-        roomRepository.save(updatedRoom);
+                    JsonMergePatch patch = JsonMergePatch.fromJson(inputNode);
+                    Room updatedRoom = mapper.treeToValue(patch.apply(roomNode), Room.class);
 
-        PartialUpdateRoomOutput output = conversionService.convert(updatedRoom, PartialUpdateRoomOutput.class);
+                    roomRepository.save(updatedRoom);
 
-        log.info("End partialUpdateRoom output: {}", output);
-        return output;
+                    PartialUpdateRoomOutput output = conversionService.convert(updatedRoom, PartialUpdateRoomOutput.class);
+
+                    log.info("End partialUpdateRoom output: {}", output);
+                    return output;
+                })
+                .toEither()
+                .mapLeft(throwable -> Match(throwable).of(
+                        Case($(instanceOf(NotFoundException.class)), ex -> errorMapper.handleError(ex, HttpStatus.NOT_FOUND)),
+                        Case($(), ex -> errorMapper.handleError(ex, HttpStatus.BAD_REQUEST))
+                ));
     }
 
     private Room getIfRoomExists(PartialUpdateRoomInput input) {
@@ -98,7 +124,7 @@ public class PartialUpdateOperation implements PartialUpdateProcess {
         List<BedSize> bedSizes = new ArrayList<>();
         if (input.getBedSizes() != null
                 && !ObjectUtils.isEmpty(input.getBedSizes())) {
-           bedSizes = input.getBedSizes()
+            bedSizes = input.getBedSizes()
                     .stream()
                     .map(this::checkIfBedSizeIsValid)
                     .toList();

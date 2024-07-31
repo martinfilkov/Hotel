@@ -1,5 +1,6 @@
 package com.tinqinacademy.hotel.api.operations.system.inforregister;
 
+import com.tinqinacademy.hotel.api.operations.base.OperationOutput;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -10,7 +11,7 @@ import java.time.LocalDate;
 @Setter
 @Builder
 @ToString
-public class InfoRegisterOutput {
+public class InfoRegisterOutput implements OperationOutput {
     private LocalDate startDate;
     private LocalDate endDate;
     private String firstName;

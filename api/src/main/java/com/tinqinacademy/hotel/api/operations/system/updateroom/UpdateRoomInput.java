@@ -1,6 +1,7 @@
 package com.tinqinacademy.hotel.api.operations.system.updateroom;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.tinqinacademy.hotel.api.operations.base.OperationInput;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -15,7 +16,7 @@ import java.util.List;
 @Setter
 @Builder(toBuilder = true)
 @ToString
-public class UpdateRoomInput {
+public class UpdateRoomInput implements OperationInput {
     @JsonIgnore
     private String roomId;
 

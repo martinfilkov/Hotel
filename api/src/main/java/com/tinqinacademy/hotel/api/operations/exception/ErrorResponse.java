@@ -1,6 +1,8 @@
 package com.tinqinacademy.hotel.api.operations.exception;
 
+import com.tinqinacademy.hotel.api.operations.base.Errors;
 import lombok.*;
+import org.springframework.http.HttpStatusCode;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -9,6 +11,5 @@ import lombok.*;
 @Builder
 @ToString
 public class ErrorResponse {
-    private int status;
     private String message;
 }
