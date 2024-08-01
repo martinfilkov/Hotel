@@ -28,7 +28,7 @@ public class BaseOperationProcessor {
         this.errorMapper = errorMapper;
     }
 
-    public <T extends OperationInput> Either<Errors, T> validateInput(T input) {
+    public Either<Errors, ? extends OperationInput> validateInput(OperationInput input) {
         Set<ConstraintViolation<OperationInput>> constraintViolations = validator.validate(input);
 
         if (constraintViolations.isEmpty()) {

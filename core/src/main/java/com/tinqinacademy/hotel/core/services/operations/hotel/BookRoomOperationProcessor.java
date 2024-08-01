@@ -53,7 +53,7 @@ public class BookRoomOperationProcessor extends BaseOperationProcessor implement
     @Override
     public Either<Errors, BookRoomOutput> process(final BookRoomInput input) {
         return validateInput(input)
-                .flatMap(this::bookRoom);
+                .flatMap(validated -> bookRoom(input));
     }
 
     private Either<Errors, BookRoomOutput> bookRoom(BookRoomInput input){
