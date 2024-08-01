@@ -17,6 +17,7 @@ import java.util.List;
 @Builder(toBuilder = true)
 @ToString
 public class UpdateRoomInput implements OperationInput {
+    @NotBlank(message = "roomId cannot be null")
     @JsonIgnore
     private String roomId;
 

@@ -16,6 +16,7 @@ import java.util.List;
 @Builder
 @ToString
 public class CreateRoomInput implements OperationInput {
+    @NotBlank(message = "Bed sizes cannot be null")
     private List<String> bedSizes;
 
     @NotBlank(message = "Bathroom type cannot be null")

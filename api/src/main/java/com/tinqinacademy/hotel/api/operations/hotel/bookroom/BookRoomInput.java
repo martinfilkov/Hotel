@@ -16,6 +16,7 @@ import java.time.LocalDate;
 @Builder(toBuilder = true)
 @ToString
 public class BookRoomInput implements OperationInput {
+    @NotBlank(message = "roomId cannot be null")
     @JsonIgnore
     private String roomId;
 
