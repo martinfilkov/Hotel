@@ -55,7 +55,6 @@ public class PartialUpdateOperationProcessor extends BaseOperationProcessor impl
         this.mapper = mapper;
     }
 
-    @SneakyThrows
     @Override
     public Either<Errors, PartialUpdateRoomOutput> process(PartialUpdateRoomInput input) {
         return validateInput(input)
