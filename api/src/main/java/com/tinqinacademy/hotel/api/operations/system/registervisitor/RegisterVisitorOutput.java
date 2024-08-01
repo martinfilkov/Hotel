@@ -1,7 +1,12 @@
 package com.tinqinacademy.hotel.api.operations.system.registervisitor;
 
-import lombok.NoArgsConstructor;
+import com.tinqinacademy.hotel.api.operations.base.OperationOutput;
+import lombok.*;
 
 @NoArgsConstructor
-public class RegisterVisitorOutput {
+@Builder
+@Getter
+@Setter
+@ToString
+public class RegisterVisitorOutput implements OperationOutput {
 }

@@ -1,6 +1,6 @@
 package com.tinqinacademy.hotel.api.operations.system.registervisitor;
 
-import jakarta.validation.constraints.FutureOrPresent;
+import com.tinqinacademy.hotel.api.operations.base.OperationInput;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @Setter
 @Builder
 @ToString
-public class RegisterVisitorInput {
+public class RegisterVisitorInput implements OperationInput {
     @NotBlank(message = "First name cannot be null")
     private String firstName;
 

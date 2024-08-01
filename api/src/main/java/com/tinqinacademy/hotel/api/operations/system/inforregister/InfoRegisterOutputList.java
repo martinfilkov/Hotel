@@ -1,5 +1,6 @@
 package com.tinqinacademy.hotel.api.operations.system.inforregister;
 
+import com.tinqinacademy.hotel.api.operations.base.OperationOutput;
 import lombok.*;
 
 import java.util.List;
@@ -10,6 +11,6 @@ import java.util.List;
 @Setter
 @Builder
 @ToString
-public class InfoRegisterOutputList {
+public class InfoRegisterOutputList implements OperationOutput {
     List<InfoRegisterOutput> visitors;
 }

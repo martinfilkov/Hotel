@@ -1,18 +1,21 @@
 package com.tinqinacademy.hotel.rest.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tinqinacademy.hotel.api.operations.base.Errors;
 import com.tinqinacademy.hotel.api.operations.hotel.bookroom.BookRoomInput;
+import com.tinqinacademy.hotel.api.operations.hotel.bookroom.BookRoomOperation;
 import com.tinqinacademy.hotel.api.operations.hotel.bookroom.BookRoomOutput;
 import com.tinqinacademy.hotel.api.operations.hotel.getroomids.GetRoomIdsInput;
+import com.tinqinacademy.hotel.api.operations.hotel.getroomids.GetRoomIdsOperation;
 import com.tinqinacademy.hotel.api.operations.hotel.getroomids.GetRoomIdsOutput;
 import com.tinqinacademy.hotel.api.operations.hotel.roombyid.RoomByIdInput;
+import com.tinqinacademy.hotel.api.operations.hotel.roombyid.RoomByIdOperation;
 import com.tinqinacademy.hotel.api.operations.hotel.roombyid.RoomByIdOutput;
 import com.tinqinacademy.hotel.api.operations.hotel.unbookroom.UnbookRoomInput;
+import com.tinqinacademy.hotel.api.operations.hotel.unbookroom.UnbookRoomOperation;
 import com.tinqinacademy.hotel.api.operations.hotel.unbookroom.UnbookRoomOutput;
-import com.tinqinacademy.hotel.core.services.HotelService;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.validation.Valid;
+import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,21 +26,23 @@ import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
-public class HotelController {
-    private final HotelService hotelService;
-    private final ObjectMapper objectMapper;
+public class HotelController extends BaseController {
+    private final GetRoomIdsOperation getRoomIdsOperation;
+    private final RoomByIdOperation roomByIdOperation;
+    private final BookRoomOperation bookRoomOperation;
+    private final UnbookRoomOperation unbookRoomOperation;
 
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully returned ids"),
             @ApiResponse(responseCode = "403", description = "User not authorized")
     })
     @GetMapping(URLMapping.GET_IDS)
-    public ResponseEntity<GetRoomIdsOutput> getIds(
+    public ResponseEntity<?> getIds(
             @RequestParam("startDate") LocalDate startDate,
             @RequestParam("endDate") LocalDate endDate,
             @RequestParam(value = "bedSize", required = false) Optional<String> bedSize,
             @RequestParam(value = "bathroomType", required = false) Optional<String> bathRoomType
-            ){
+    ) {
         GetRoomIdsInput input = GetRoomIdsInput.builder()
                 .startDate(startDate)
                 .endDate(endDate)
@@ -45,9 +50,8 @@ public class HotelController {
                 .bedSize(bedSize)
                 .build();
 
-        GetRoomIdsOutput output = hotelService.getRoomIds(input);
-
-        return ResponseEntity.ok(output);
+        Either<Errors, GetRoomIdsOutput> output = getRoomIdsOperation.process(input);
+        return handleResponse(output, HttpStatus.OK);
     }
 
     @ApiResponses(value = {
@@ -56,14 +60,14 @@ public class HotelController {
             @ApiResponse(responseCode = "404", description = "Room not found")
     })
     @GetMapping(URLMapping.GET_ROOM)
-    public ResponseEntity<RoomByIdOutput> getRoom(@PathVariable String roomId){
+    public ResponseEntity<?> getRoom(@PathVariable String roomId) {
         RoomByIdInput input = RoomByIdInput.builder()
                 .id(roomId)
                 .build();
 
-        RoomByIdOutput output = hotelService.getRoom(input);
+        Either<Errors, RoomByIdOutput> output = roomByIdOperation.process(input);
 
-        return ResponseEntity.ok(output);
+        return handleResponse(output, HttpStatus.OK);
     }
 
     @ApiResponses(value = {
@@ -71,13 +75,15 @@ public class HotelController {
             @ApiResponse(responseCode = "403", description = "User not authorized")
     })
     @PostMapping(URLMapping.BOOK_ROOM)
-    public ResponseEntity<BookRoomOutput> bookRoom(@PathVariable String roomId,
-                                                   @Valid @RequestBody BookRoomInput request){
+    public ResponseEntity<?> bookRoom(@PathVariable String roomId,
+                                      @RequestBody BookRoomInput request) {
         BookRoomInput input = request.toBuilder()
                 .roomId(roomId)
                 .build();
 
-        return new ResponseEntity<>(hotelService.bookRoom(input), HttpStatus.CREATED);
+        Either<Errors, BookRoomOutput> output = bookRoomOperation.process(input);
+
+        return handleResponse(output, HttpStatus.CREATED);
     }
 
     @ApiResponses(value = {
@@ -86,14 +92,14 @@ public class HotelController {
             @ApiResponse(responseCode = "404", description = "Room not found")
     })
     @DeleteMapping(URLMapping.UNBOOK_ROOM)
-    public ResponseEntity<UnbookRoomOutput> unbookRoom(@PathVariable String bookingId){
+    public ResponseEntity<?> unbookRoom(@PathVariable String bookingId) {
         UnbookRoomInput input = UnbookRoomInput.builder()
                 .bookingId(bookingId)
                 .build();
 
-        UnbookRoomOutput output = hotelService.unbookRoom(input);
+        Either<Errors, UnbookRoomOutput> output = unbookRoomOperation.process(input);
 
-        return new ResponseEntity<>(output, HttpStatus.ACCEPTED);
+        return handleResponse(output, HttpStatus.ACCEPTED);
     }
 }
 

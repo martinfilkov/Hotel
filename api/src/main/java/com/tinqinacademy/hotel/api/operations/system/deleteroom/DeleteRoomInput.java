@@ -1,5 +1,6 @@
 package com.tinqinacademy.hotel.api.operations.system.deleteroom;
 
+import com.tinqinacademy.hotel.api.operations.base.OperationInput;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
@@ -9,7 +10,7 @@ import lombok.*;
 @Setter
 @Builder
 @ToString
-public class DeleteRoomInput {
+public class DeleteRoomInput implements OperationInput {
     @NotBlank(message = "Id cannot be null")
     private String id;
 }
