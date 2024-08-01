@@ -1,11 +1,12 @@
-package com.tinqinacademy.hotel.core.services.operation.system;
+package com.tinqinacademy.hotel.core.services.operations.system;
 
 import com.tinqinacademy.hotel.api.operations.base.Errors;
+import com.tinqinacademy.hotel.api.operations.exception.NotAvailableException;
 import com.tinqinacademy.hotel.api.operations.exception.NotFoundException;
-import com.tinqinacademy.hotel.api.operations.system.updateroom.UpdateRoomInput;
-import com.tinqinacademy.hotel.api.operations.system.updateroom.UpdateRoomOperation;
-import com.tinqinacademy.hotel.api.operations.system.updateroom.UpdateRoomOutput;
-import com.tinqinacademy.hotel.core.services.operation.BaseOperationProcessor;
+import com.tinqinacademy.hotel.api.operations.system.createroom.CreateRoomInput;
+import com.tinqinacademy.hotel.api.operations.system.createroom.CreateRoomOperation;
+import com.tinqinacademy.hotel.api.operations.system.createroom.CreateRoomOutput;
+import com.tinqinacademy.hotel.core.services.operations.BaseOperationProcessor;
 import com.tinqinacademy.hotel.core.utils.ErrorMapper;
 import com.tinqinacademy.hotel.persistence.entity.Room;
 import com.tinqinacademy.hotel.persistence.model.BathroomType;
@@ -24,22 +25,20 @@ import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 import static io.vavr.API.*;
 import static io.vavr.Predicates.instanceOf;
 
 @Slf4j
 @Service
-public class UpdateRoomOperationProcessor extends BaseOperationProcessor implements UpdateRoomOperation {
+public class CreateRoomOperationProcessor extends BaseOperationProcessor implements CreateRoomOperation {
     private final RoomRepository roomRepository;
     private final BedRepository bedRepository;
 
     @Autowired
-    public UpdateRoomOperationProcessor(RoomRepository roomRepository,
-                                        ConversionService conversionService,
+    public CreateRoomOperationProcessor(RoomRepository roomRepository,
                                         BedRepository bedRepository,
+                                        ConversionService conversionService,
                                         Validator validator,
                                         ErrorMapper errorMapper) {
         super(conversionService, validator, errorMapper);
@@ -48,62 +47,56 @@ public class UpdateRoomOperationProcessor extends BaseOperationProcessor impleme
     }
 
     @Override
-    public Either<Errors, UpdateRoomOutput> process(UpdateRoomInput input) {
+    public Either<Errors, CreateRoomOutput> process(CreateRoomInput input) {
         return validateInput(input)
-                .flatMap(this::updateRoom);
+                .flatMap(this::createRoom);
     }
 
-    private Either<Errors, UpdateRoomOutput> updateRoom(UpdateRoomInput input) {
+    private Either<Errors, CreateRoomOutput> createRoom(CreateRoomInput input){
         return Try.of(() -> {
-                    log.info("Start updateRoom input: {}", input);
-
-                    Room currentRoom = getIfRoomExists(input);
-
+                    log.info("Start createRoom input: {}", input);
+                    checkIfRoomExists(input);
                     checkIfBathroomIsValid(input);
 
                     List<BedSize> bedSizes = getBedSizesIfValid(input);
 
                     Room room = conversionService.convert(input, Room.RoomBuilder.class)
                             .bedSizes(bedRepository.findAllByBedSizeIn(bedSizes))
-                            .floor(currentRoom.getFloor())
                             .build();
 
-                    Room updatedRoom = roomRepository.save(room);
+                    Room savedRoom = roomRepository.save(room);
 
-                    UpdateRoomOutput output = conversionService.convert(updatedRoom, UpdateRoomOutput.class);
+                    CreateRoomOutput output = conversionService.convert(savedRoom, CreateRoomOutput.class);
 
-                    log.info("End updateRoom output: {}", output);
+                    log.info("End createRoom output: {}", output);
                     return output;
                 })
                 .toEither()
                 .mapLeft(throwable -> Match(throwable).of(
                         Case($(instanceOf(NotFoundException.class)), ex -> errorMapper.handleError(ex, HttpStatus.NOT_FOUND)),
+                        Case($(instanceOf(NotAvailableException.class)), ex -> errorMapper.handleError(ex, HttpStatus.CONFLICT)),
                         Case($(), ex -> errorMapper.handleError(ex, HttpStatus.BAD_REQUEST))
                 ));
     }
 
-    private void checkIfBathroomIsValid(UpdateRoomInput input) {
+    private void checkIfRoomExists(CreateRoomInput input){
+        log.info("Check if room with roomNumber {} already exists", input.getRoomNumber());
+        if (roomRepository.existsByRoomNumber(input.getRoomNumber())){
+            throw new NotAvailableException(String.format("Room with room number %s already exists", input.getRoomNumber()));
+        }
+        log.info("Room does not exist");
+    }
+
+    private void checkIfBathroomIsValid(CreateRoomInput input) {
         log.info("Check if bathroom type is valid");
         if (BathroomType.getByCode(input.getBathRoomType()).equals(BathroomType.UNKNOWN)
                 && input.getBathRoomType() != null) {
-            throw new NotFoundException(String.format("Bathroom type %s not found", input.getBathRoomType()));
+            throw new NotFoundException("Bathroom type " + input.getBathRoomType() + " not found");
         }
         log.info("Bathroom type is valid");
     }
 
-    private Room getIfRoomExists(UpdateRoomInput input) {
-        log.info("Try to get room with id: {}", input.getRoomId());
-
-        Optional<Room> roomOptional = roomRepository.findById(UUID.fromString(input.getRoomId()));
-        if (roomOptional.isEmpty()) {
-            throw new NotFoundException(String.format("Room with id %s not found", input.getRoomId()));
-        }
-
-        log.info("Room with id {} exists", input.getRoomId());
-        return roomOptional.get();
-    }
-
-    private List<BedSize> getBedSizesIfValid(UpdateRoomInput input) {
+    private List<BedSize> getBedSizesIfValid(CreateRoomInput input) {
         log.info("Check if each bed size is valid and not null");
         List<BedSize> bedSizes = new ArrayList<>();
         if (input.getBedSizes() != null
@@ -120,7 +113,7 @@ public class UpdateRoomOperationProcessor extends BaseOperationProcessor impleme
     private BedSize checkIfBedSizeIsValid(String bedSize) {
         BedSize bed = BedSize.getByCode(bedSize);
         if (bed.equals(BedSize.UNKNOWN)) {
-            throw new NotFoundException(String.format("Bed size %s not found", bedSize));
+            throw new NotFoundException("Bed size " + bedSize + " not found");
         } else {
             return bed;
         }

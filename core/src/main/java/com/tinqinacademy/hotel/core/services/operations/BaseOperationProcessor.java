@@ -1,4 +1,4 @@
-package com.tinqinacademy.hotel.core.services.operation;
+package com.tinqinacademy.hotel.core.services.operations;
 
 import com.tinqinacademy.hotel.api.operations.base.Errors;
 import com.tinqinacademy.hotel.api.operations.base.OperationInput;

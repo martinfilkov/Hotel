@@ -1,4 +1,4 @@
-package com.tinqinacademy.hotel.core.services.operation.system;
+package com.tinqinacademy.hotel.core.services.operations.system;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,7 +8,7 @@ import com.tinqinacademy.hotel.api.operations.exception.NotFoundException;
 import com.tinqinacademy.hotel.api.operations.system.partialupdate.PartialUpdateOperation;
 import com.tinqinacademy.hotel.api.operations.system.partialupdate.PartialUpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.system.partialupdate.PartialUpdateRoomOutput;
-import com.tinqinacademy.hotel.core.services.operation.BaseOperationProcessor;
+import com.tinqinacademy.hotel.core.services.operations.BaseOperationProcessor;
 import com.tinqinacademy.hotel.core.utils.ErrorMapper;
 import com.tinqinacademy.hotel.persistence.entity.Bed;
 import com.tinqinacademy.hotel.persistence.entity.Room;

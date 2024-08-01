@@ -1,13 +1,12 @@
-package com.tinqinacademy.hotel.core.services.operation.system;
+package com.tinqinacademy.hotel.core.services.operations.system;
 
 import com.tinqinacademy.hotel.api.operations.base.Errors;
-import com.tinqinacademy.hotel.api.operations.exception.ErrorResponse;
 import com.tinqinacademy.hotel.api.operations.exception.NotFoundException;
 import com.tinqinacademy.hotel.api.operations.system.inforregister.GetRegisterInfoOperation;
 import com.tinqinacademy.hotel.api.operations.system.inforregister.InfoRegisterInput;
 import com.tinqinacademy.hotel.api.operations.system.inforregister.InfoRegisterOutput;
 import com.tinqinacademy.hotel.api.operations.system.inforregister.InfoRegisterOutputList;
-import com.tinqinacademy.hotel.core.services.operation.BaseOperationProcessor;
+import com.tinqinacademy.hotel.core.services.operations.BaseOperationProcessor;
 import com.tinqinacademy.hotel.core.utils.ErrorMapper;
 import com.tinqinacademy.hotel.core.utils.SpecificationUtils;
 import com.tinqinacademy.hotel.persistence.entity.Guest;

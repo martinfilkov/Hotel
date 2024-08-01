@@ -1,10 +1,10 @@
-package com.tinqinacademy.hotel.core.services.operation.hotel;
+package com.tinqinacademy.hotel.core.services.operations.hotel;
 
 import com.tinqinacademy.hotel.api.operations.base.Errors;
 import com.tinqinacademy.hotel.api.operations.hotel.getroomids.GetRoomIdsInput;
 import com.tinqinacademy.hotel.api.operations.hotel.getroomids.GetRoomIdsOperation;
 import com.tinqinacademy.hotel.api.operations.hotel.getroomids.GetRoomIdsOutput;
-import com.tinqinacademy.hotel.core.services.operation.BaseOperationProcessor;
+import com.tinqinacademy.hotel.core.services.operations.BaseOperationProcessor;
 import com.tinqinacademy.hotel.core.utils.ErrorMapper;
 import com.tinqinacademy.hotel.persistence.entity.Room;
 import com.tinqinacademy.hotel.persistence.model.BathroomType;

@@ -1,14 +1,13 @@
-package com.tinqinacademy.hotel.core.services.operation.hotel;
+package com.tinqinacademy.hotel.core.services.operations.hotel;
 
 import com.tinqinacademy.hotel.api.operations.base.Errors;
-import com.tinqinacademy.hotel.api.operations.base.OperationInput;
 import com.tinqinacademy.hotel.api.operations.exception.InvalidInputException;
 import com.tinqinacademy.hotel.api.operations.exception.NotAvailableException;
 import com.tinqinacademy.hotel.api.operations.exception.NotFoundException;
 import com.tinqinacademy.hotel.api.operations.hotel.bookroom.BookRoomInput;
 import com.tinqinacademy.hotel.api.operations.hotel.bookroom.BookRoomOperation;
 import com.tinqinacademy.hotel.api.operations.hotel.bookroom.BookRoomOutput;
-import com.tinqinacademy.hotel.core.services.operation.BaseOperationProcessor;
+import com.tinqinacademy.hotel.core.services.operations.BaseOperationProcessor;
 import com.tinqinacademy.hotel.core.utils.ErrorMapper;
 import com.tinqinacademy.hotel.persistence.entity.Reservation;
 import com.tinqinacademy.hotel.persistence.entity.Room;
