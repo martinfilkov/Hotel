@@ -80,7 +80,7 @@ public class RoomByIdOperationProcessor extends BaseOperationProcessor implement
         Optional<Room> roomOptional = roomRepository.findById(UUID.fromString((input.getId())));
 
         if (roomOptional.isEmpty()) {
-            throw new NotFoundException("Room with id " + input.getId() + " not found");
+            throw new NotFoundException(String.format("Room with id input.getId() %s not found", input.getId()));
         }
 
         log.info("Found a room with id: {}", input.getId());

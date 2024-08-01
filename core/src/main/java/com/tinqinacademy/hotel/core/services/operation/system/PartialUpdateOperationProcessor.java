@@ -62,17 +62,21 @@ public class PartialUpdateOperationProcessor extends BaseOperationProcessor impl
                 .flatMap(this::partialUpdateRoom);
     }
 
-    private Either<Errors, PartialUpdateRoomOutput> partialUpdateRoom(PartialUpdateRoomInput input){
+    private Either<Errors, PartialUpdateRoomOutput> partialUpdateRoom(PartialUpdateRoomInput input) {
         return Try.of(() -> {
                     log.info("Start partialUpdateRoom input: {}", input);
 
                     checkIfBathroomIsValid(input);
 
-                    List<BedSize> bedSizes = getBedSizesIfValid(input);
-
                     Room currentRoom = getIfRoomExists(input);
 
+                    List<BedSize> bedSizes = getBedSizesIfValid(input);
+
                     List<Bed> beds = bedRepository.findAllByBedSizeIn(bedSizes);
+
+                    beds = ObjectUtils.isEmpty(beds)
+                            ? currentRoom.getBedSizes()
+                            : beds;
 
                     Room inputRoom = conversionService.convert(input, Room.RoomBuilder.class)
                             .bedSizes(beds)
