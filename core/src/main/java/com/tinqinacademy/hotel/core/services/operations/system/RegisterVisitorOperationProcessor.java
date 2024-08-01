@@ -46,7 +46,7 @@ public class RegisterVisitorOperationProcessor extends BaseOperationProcessor im
     @Override
     public Either<Errors, RegisterVisitorOutput> process(RegisterVisitorInputList inputList) {
         return validateInput(inputList)
-                .flatMap(this::registerVisitor);
+                .flatMap(validated -> registerVisitor(inputList));
     }
 
     private Either<Errors, RegisterVisitorOutput> registerVisitor(RegisterVisitorInputList inputList) {

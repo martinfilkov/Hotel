@@ -49,7 +49,7 @@ public class CreateRoomOperationProcessor extends BaseOperationProcessor impleme
     @Override
     public Either<Errors, CreateRoomOutput> process(CreateRoomInput input) {
         return validateInput(input)
-                .flatMap(this::createRoom);
+                .flatMap(validated -> createRoom(input));
     }
 
     private Either<Errors, CreateRoomOutput> createRoom(CreateRoomInput input){

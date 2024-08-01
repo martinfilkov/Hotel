@@ -59,7 +59,7 @@ public class PartialUpdateOperationProcessor extends BaseOperationProcessor impl
     @Override
     public Either<Errors, PartialUpdateRoomOutput> process(PartialUpdateRoomInput input) {
         return validateInput(input)
-                .flatMap(this::partialUpdateRoom);
+                .flatMap(validated -> partialUpdateRoom(input));
     }
 
     private Either<Errors, PartialUpdateRoomOutput> partialUpdateRoom(PartialUpdateRoomInput input) {

@@ -49,7 +49,7 @@ public class RoomByIdOperationProcessor extends BaseOperationProcessor implement
     @Override
     public Either<Errors, RoomByIdOutput> process(RoomByIdInput input) {
         return validateInput(input)
-                .flatMap(this::roomById);
+                .flatMap(validated -> roomById(input));
     }
 
     private Either<Errors, RoomByIdOutput> roomById(RoomByIdInput input) {

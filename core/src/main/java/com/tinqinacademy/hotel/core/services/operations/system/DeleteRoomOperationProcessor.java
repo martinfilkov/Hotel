@@ -41,7 +41,7 @@ public class DeleteRoomOperationProcessor extends BaseOperationProcessor impleme
     @Override
     public Either<Errors, DeleteRoomOutput> process(DeleteRoomInput input) {
         return validateInput(input)
-                .flatMap(this::deleteRoom);
+                .flatMap(validated -> deleteRoom(input));
     }
 
     private Either<Errors, DeleteRoomOutput> deleteRoom(DeleteRoomInput input){

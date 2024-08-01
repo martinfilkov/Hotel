@@ -50,7 +50,7 @@ public class UpdateRoomOperationProcessor extends BaseOperationProcessor impleme
     @Override
     public Either<Errors, UpdateRoomOutput> process(UpdateRoomInput input) {
         return validateInput(input)
-                .flatMap(this::updateRoom);
+                .flatMap(validated -> updateRoom(input));
     }
 
     private Either<Errors, UpdateRoomOutput> updateRoom(UpdateRoomInput input) {

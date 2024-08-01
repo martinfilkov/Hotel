@@ -45,7 +45,7 @@ public class GetRegisterInfoOperationProcessor extends BaseOperationProcessor im
     @Override
     public Either<Errors, InfoRegisterOutputList> process(InfoRegisterInput input) {
         return validateInput(input)
-                .flatMap(this::getRegisterInfo);
+                .flatMap(validated -> getRegisterInfo(input));
     }
 
     private Either<Errors, InfoRegisterOutputList> getRegisterInfo(InfoRegisterInput input){

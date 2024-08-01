@@ -41,7 +41,7 @@ public class UnbookRoomOperationProcessor extends BaseOperationProcessor impleme
     @Override
     public Either<Errors, UnbookRoomOutput> process(UnbookRoomInput input) {
         return validateInput(input)
-                .flatMap(this::unbookRoom);
+                .flatMap(validated -> unbookRoom(input));
     }
 
     private Either<Errors, UnbookRoomOutput> unbookRoom(UnbookRoomInput input){
