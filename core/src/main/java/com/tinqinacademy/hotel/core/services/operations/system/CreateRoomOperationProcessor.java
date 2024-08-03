@@ -56,9 +56,8 @@ public class CreateRoomOperationProcessor extends BaseOperationProcessor impleme
         return Try.of(() -> {
                     log.info("Start createRoom input: {}", input);
                     checkIfRoomExists(input);
-                    checkIfBathroomIsValid(input);
 
-                    List<BedSize> bedSizes = getBedSizesIfValid(input);
+                    List<BedSize> bedSizes = getBedSizes(input);
 
                     Room room = conversionService.convert(input, Room.RoomBuilder.class)
                             .bedSizes(bedRepository.findAllByBedSizeIn(bedSizes))
@@ -87,35 +86,17 @@ public class CreateRoomOperationProcessor extends BaseOperationProcessor impleme
         log.info("Room does not exist");
     }
 
-    private void checkIfBathroomIsValid(CreateRoomInput input) {
-        log.info("Check if bathroom type is valid");
-        if (BathroomType.getByCode(input.getBathRoomType()).equals(BathroomType.UNKNOWN)
-                && input.getBathRoomType() != null) {
-            throw new NotFoundException("Bathroom type " + input.getBathRoomType() + " not found");
-        }
-        log.info("Bathroom type is valid");
-    }
-
-    private List<BedSize> getBedSizesIfValid(CreateRoomInput input) {
-        log.info("Check if each bed size is valid and not null");
+    private List<BedSize> getBedSizes(CreateRoomInput input) {
+        log.info("Get bed sizes from strings");
         List<BedSize> bedSizes = new ArrayList<>();
         if (input.getBedSizes() != null
                 && !ObjectUtils.isEmpty(input.getBedSizes())) {
             bedSizes = input.getBedSizes()
                     .stream()
-                    .map(this::checkIfBedSizeIsValid)
+                    .map(BedSize::getByCode)
                     .toList();
         }
-        log.info("Bed sizes are valid");
+        log.info("Got all bed sizes");
         return bedSizes;
-    }
-
-    private BedSize checkIfBedSizeIsValid(String bedSize) {
-        BedSize bed = BedSize.getByCode(bedSize);
-        if (bed.equals(BedSize.UNKNOWN)) {
-            throw new NotFoundException("Bed size " + bedSize + " not found");
-        } else {
-            return bed;
-        }
     }
 }

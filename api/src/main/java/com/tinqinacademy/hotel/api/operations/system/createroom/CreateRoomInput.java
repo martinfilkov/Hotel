@@ -1,5 +1,7 @@
 package com.tinqinacademy.hotel.api.operations.system.createroom;
 
+import com.tinqinacademy.hotel.api.operations.annotations.bathroom.BathroomValidation;
+import com.tinqinacademy.hotel.api.operations.annotations.bedsize.BedSizeValidation;
 import com.tinqinacademy.hotel.api.operations.base.OperationInput;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
@@ -17,9 +19,11 @@ import java.util.List;
 @Builder
 @ToString
 public class CreateRoomInput implements OperationInput {
+    @BedSizeValidation
     @NotNull(message = "Bed sizes cannot be null")
     private List<String> bedSizes;
 
+    @BathroomValidation
     @NotBlank(message = "Bathroom type cannot be null")
     private String bathRoomType;
 

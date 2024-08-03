@@ -1,8 +1,11 @@
 package com.tinqinacademy.hotel.api.operations.system.partialupdate;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.tinqinacademy.hotel.api.operations.annotations.bathroom.BathroomValidation;
+import com.tinqinacademy.hotel.api.operations.annotations.bedsize.BedSizeValidation;
 import com.tinqinacademy.hotel.api.operations.base.OperationInput;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 
@@ -20,8 +23,10 @@ public class PartialUpdateRoomInput implements OperationInput {
     @JsonIgnore
     private String roomId;
 
+    @BedSizeValidation(optional = true)
     private List<String> bedSizes;
 
+    @BathroomValidation(optional = true)
     private String bathRoomType;
 
     private String roomNumber;
