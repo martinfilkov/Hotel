@@ -1,6 +1,8 @@
 package com.tinqinacademy.hotel.api.operations.system.updateroom;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.tinqinacademy.hotel.api.operations.annotations.bathroom.BathroomValidation;
+import com.tinqinacademy.hotel.api.operations.annotations.bedsize.BedSizeValidation;
 import com.tinqinacademy.hotel.api.operations.base.OperationInput;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
@@ -23,9 +25,11 @@ public class UpdateRoomInput implements OperationInput {
     private String roomId;
 
     @NotNull(message = "Bed sizes cannot be null")
+    @BedSizeValidation
     private List<String> bedSizes;
 
     @NotBlank(message = "Bathroom type cannot be null")
+    @BathroomValidation
     private String bathRoomType;
 
     @NotBlank(message = "Room number cannot be null")

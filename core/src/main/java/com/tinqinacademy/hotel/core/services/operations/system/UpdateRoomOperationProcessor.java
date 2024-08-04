@@ -59,9 +59,7 @@ public class UpdateRoomOperationProcessor extends BaseOperationProcessor impleme
 
                     Room currentRoom = getIfRoomExists(input);
 
-                    checkIfBathroomIsValid(input);
-
-                    List<BedSize> bedSizes = getBedSizesIfValid(input);
+                    List<BedSize> bedSizes = getBedSizes(input);
 
                     Room room = conversionService.convert(input, Room.RoomBuilder.class)
                             .bedSizes(bedRepository.findAllByBedSizeIn(bedSizes))
@@ -82,15 +80,6 @@ public class UpdateRoomOperationProcessor extends BaseOperationProcessor impleme
                 ));
     }
 
-    private void checkIfBathroomIsValid(UpdateRoomInput input) {
-        log.info("Check if bathroom type is valid");
-        if (BathroomType.getByCode(input.getBathRoomType()).equals(BathroomType.UNKNOWN)
-                && input.getBathRoomType() != null) {
-            throw new NotFoundException(String.format("Bathroom type %s not found", input.getBathRoomType()));
-        }
-        log.info("Bathroom type is valid");
-    }
-
     private Room getIfRoomExists(UpdateRoomInput input) {
         log.info("Try to get room with id: {}", input.getRoomId());
 
@@ -103,26 +92,17 @@ public class UpdateRoomOperationProcessor extends BaseOperationProcessor impleme
         return roomOptional.get();
     }
 
-    private List<BedSize> getBedSizesIfValid(UpdateRoomInput input) {
-        log.info("Check if each bed size is valid and not null");
+    private List<BedSize> getBedSizes(UpdateRoomInput input) {
+        log.info("Get bed sizes from strings");
         List<BedSize> bedSizes = new ArrayList<>();
         if (input.getBedSizes() != null
                 && !ObjectUtils.isEmpty(input.getBedSizes())) {
             bedSizes = input.getBedSizes()
                     .stream()
-                    .map(this::checkIfBedSizeIsValid)
+                    .map(BedSize::getByCode)
                     .toList();
         }
-        log.info("Bed sizes are valid");
+        log.info("Got all bed sizes");
         return bedSizes;
-    }
-
-    private BedSize checkIfBedSizeIsValid(String bedSize) {
-        BedSize bed = BedSize.getByCode(bedSize);
-        if (bed.equals(BedSize.UNKNOWN)) {
-            throw new NotFoundException(String.format("Bed size %s not found", bedSize));
-        } else {
-            return bed;
-        }
     }
 }
