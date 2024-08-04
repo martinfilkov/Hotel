@@ -19,12 +19,12 @@ import java.util.List;
 @Builder
 @ToString
 public class CreateRoomInput implements OperationInput {
-    @BedSizeValidation
     @NotNull(message = "Bed sizes cannot be null")
+    @BedSizeValidation
     private List<String> bedSizes;
 
-    @BathroomValidation
     @NotBlank(message = "Bathroom type cannot be null")
+    @BathroomValidation
     private String bathRoomType;
 
     @Max(value = 20, message = "There cannot be more than 20 floors")

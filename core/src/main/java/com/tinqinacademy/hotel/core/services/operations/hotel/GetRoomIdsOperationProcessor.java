@@ -19,6 +19,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
 
 import static io.vavr.API.*;
 
@@ -49,15 +51,8 @@ public class GetRoomIdsOperationProcessor extends BaseOperationProcessor impleme
                     List<Room> rooms = roomRepository.findAvailableRooms(input.getStartDate(), input.getEndDate());
 
                     List<Room> availableRooms = rooms.stream()
-                            .filter(room -> input.getBedSize()
-                                    .map(size -> room.getBedSizes().stream()
-                                            .anyMatch(bed -> bed.getBedSize().toString().equals(size)))
-                                    .orElse(true))
-                            .filter(room ->
-                                    input.getBathroomType()
-                                            .map(type -> BathroomType.getByCode(type) == room.getBathroomType())
-                                            .orElse(true)
-                            )
+                            .filter(bedSizeFilter(input.getBedSize()))
+                            .filter(bathroomTypeFilter(input.getBathroomType()))
                             .toList();
 
                     GetRoomIdsOutput output = conversionService.convert(availableRooms, GetRoomIdsOutput.class);
@@ -68,5 +63,18 @@ public class GetRoomIdsOperationProcessor extends BaseOperationProcessor impleme
                 .toEither()
                 .mapLeft(throwable -> Match(throwable).of(
                         Case($(), ex -> errorMapper.handleError(ex, HttpStatus.BAD_REQUEST))));
+    }
+
+    private Predicate<Room> bedSizeFilter(Optional<String> bedSize) {
+        return room -> bedSize
+                .map(size -> room.getBedSizes().stream()
+                        .anyMatch(bed -> bed.getBedSize().toString().equals(size)))
+                .orElse(true);
+    }
+
+    private Predicate<Room> bathroomTypeFilter(Optional<String> bathroomType) {
+        return room -> bathroomType
+                .map(type -> BathroomType.getByCode(type) == room.getBathroomType())
+                .orElse(true);
     }
 }

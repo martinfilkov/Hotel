@@ -7,6 +7,7 @@ import jakarta.validation.constraints.FutureOrPresent;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @NoArgsConstructor
@@ -22,9 +23,7 @@ public class GetRoomIdsInput implements OperationInput {
     @FutureOrPresent(message = "Date cannot be in the past")
     private LocalDate endDate;
 
-    @BedSizeValidation
     private Optional<String> bedSize;
 
-    @BathroomValidation
     private Optional<String> bathroomType;
 }

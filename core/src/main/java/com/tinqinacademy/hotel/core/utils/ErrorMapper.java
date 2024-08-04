@@ -7,6 +7,9 @@ import jakarta.validation.ConstraintViolation;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -19,6 +22,7 @@ public class ErrorMapper {
                         .message(ex.getMessage())
                         .build()))
                 .code(statusCode.value())
+                .timestamp(Timestamp.valueOf(LocalDateTime.now()))
                 .build();
     }
 
@@ -32,6 +36,7 @@ public class ErrorMapper {
         return ErrorWrapper.builder()
                 .errors(responses)
                 .code(statusCode.value())
+                .timestamp(Timestamp.valueOf(LocalDateTime.now()))
                 .build();
     }
 }

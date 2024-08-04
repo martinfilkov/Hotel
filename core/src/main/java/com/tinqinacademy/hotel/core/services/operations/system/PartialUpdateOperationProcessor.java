@@ -12,7 +12,6 @@ import com.tinqinacademy.hotel.core.services.operations.BaseOperationProcessor;
 import com.tinqinacademy.hotel.core.utils.ErrorMapper;
 import com.tinqinacademy.hotel.persistence.entity.Bed;
 import com.tinqinacademy.hotel.persistence.entity.Room;
-import com.tinqinacademy.hotel.persistence.model.BathroomType;
 import com.tinqinacademy.hotel.persistence.model.BedSize;
 import com.tinqinacademy.hotel.persistence.repositories.BedRepository;
 import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
