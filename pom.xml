@@ -51,6 +51,7 @@
 		<module>core</module>
 		<module>api</module>
 		<module>rest</module>
+		<module>restexport</module>
 	</modules>
 
 	<build>
