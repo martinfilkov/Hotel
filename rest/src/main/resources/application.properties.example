@@ -8,3 +8,11 @@ spring.datasource.driver-class-name=org.postgresql.Driver
 
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
+
+server.port=8080
+
+management.endpoints.web.exposure.include=*
+spring.boot.admin.client.url=http://localhost:8084/
+spring.boot.admin.client.instance.management-url=http://localhost:8080/actuator
+spring.boot.admin.client.instance.service-url=http://localhost:8080/
+spring.boot.admin.client.instance.health-url=http://localhost:8080/actuator/health
