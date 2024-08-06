@@ -1,6 +1,5 @@
 package com.tinqinacademy.hotel.restexport;
 
-import com.tinqinacademy.hotel.api.operations.base.URLMapping;
 import com.tinqinacademy.hotel.api.operations.hotel.bookroom.BookRoomInput;
 import com.tinqinacademy.hotel.api.operations.hotel.bookroom.BookRoomOutput;
 import com.tinqinacademy.hotel.api.operations.hotel.getroomids.GetRoomIdsOutput;
@@ -16,60 +15,60 @@ import com.tinqinacademy.hotel.api.operations.system.registervisitor.RegisterVis
 import com.tinqinacademy.hotel.api.operations.system.registervisitor.RegisterVisitorOutput;
 import com.tinqinacademy.hotel.api.operations.system.updateroom.UpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.system.updateroom.UpdateRoomOutput;
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import feign.Headers;
+import feign.Param;
+import feign.RequestLine;
 
 import java.time.LocalDate;
 import java.util.Optional;
 
-@FeignClient("hotel-service")
+@Headers({"Content-Type: application/json"})
 public interface HotelRestClient {
-    // Hotel
-    @GetMapping(URLMapping.GET_IDS)
-    ResponseEntity<GetRoomIdsOutput> getIds(
-            @RequestParam("startDate") LocalDate startDate,
-            @RequestParam("endDate") LocalDate endDate,
-            @RequestParam(value = "bedSize") Optional<String> bedSize,
-            @RequestParam(value = "bathroomType") Optional<String> bathRoomType
+
+    @RequestLine("GET /api/hotel/rooms?startDate={startDate}&endDate={endDate}&bedSize={bedSize}&bathroomType={bathroomType}")
+    GetRoomIdsOutput getIds(
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            @Param("bedSize") Optional<String> bedSize,
+            @Param("bathroomType") Optional<String> bathRoomType
     );
 
-    @GetMapping(URLMapping.GET_ROOM)
-    ResponseEntity<RoomByIdOutput> getRoom(@RequestParam("roomId") String roomId);
+    @RequestLine("GET /api/hotel/{roomId}")
+    RoomByIdOutput getRoom(@Param("roomId") String roomId);
 
-    @PostMapping(URLMapping.BOOK_ROOM)
-    ResponseEntity<BookRoomOutput> bookRoom(@RequestParam("roomId") String roomId, @RequestBody BookRoomInput request);
+    @RequestLine("POST /api/hotel/{roomId}")
+    BookRoomOutput bookRoom(@Param("roomId") String roomId, BookRoomInput request);
 
-    @DeleteMapping(URLMapping.UNBOOK_ROOM)
-    ResponseEntity<UnbookRoomOutput> unbookRoom(@RequestParam("bookingId") String bookingId);
+    @RequestLine("DELETE /api/hotel/{bookingId}")
+    UnbookRoomOutput unbookRoom(@Param("bookingId") String bookingId);
 
-    // System
-    @PostMapping(URLMapping.REGISTER_VISITOR)
-    ResponseEntity<RegisterVisitorOutput> register(@RequestBody RegisterVisitorInputList input);
+    @RequestLine("POST /api/system/register")
+    RegisterVisitorOutput register(RegisterVisitorInputList input);
 
-    @GetMapping(URLMapping.INFO_REGISTRY)
-    ResponseEntity<InfoRegisterOutputList> infoRegistry(
-            @RequestParam(value = "startDate") LocalDate startDate,
-            @RequestParam(value = "endDate") LocalDate endDate,
-            @RequestParam(value = "roomNumber") String roomNumber,
-            @RequestParam(value = "firstName") String firstName,
-            @RequestParam(value = "lastName") String lastName,
-            @RequestParam(value = "phone") String phone,
-            @RequestParam(value = "idCardNumber") String idCardNumber,
-            @RequestParam(value = "idCardValidity") String idCardValidity,
-            @RequestParam(value = "idCardIssueAuthority") String idCardIssueAuthority,
-            @RequestParam(value = "idCardIssueDate") String idCardIssueDate
+    @RequestLine("GET /api/system/register?startDate={startDate}&endDate={endDate}&roomNumber={roomNumber}&firstName={firstName}&lastName={lastName}&phone={phone}&idCardNumber={idCardNumber}&idCardValidity={idCardValidity}&idCardIssueAuthority={idCardIssueAuthority}&idCardIssueDate={idCardIssueDate}")
+    InfoRegisterOutputList infoRegistry(
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            @Param("roomNumber") String roomNumber,
+            @Param("firstName") String firstName,
+            @Param("lastName") String lastName,
+            @Param("phone") String phone,
+            @Param("idCardNumber") String idCardNumber,
+            @Param("idCardValidity") String idCardValidity,
+            @Param("idCardIssueAuthority") String idCardIssueAuthority,
+            @Param("idCardIssueDate") String idCardIssueDate
     );
 
-    @PostMapping(URLMapping.CREATE_ROOM)
-    ResponseEntity<CreateRoomOutput> create(@RequestBody CreateRoomInput input);
+    @RequestLine("POST /api/system/room")
+    CreateRoomOutput create(CreateRoomInput input);
 
-    @PutMapping(URLMapping.UPDATE_ROOM)
-    ResponseEntity<UpdateRoomOutput> update(@RequestParam("id") String id, @RequestBody UpdateRoomInput request);
+    @RequestLine("PUT /api/system/room/{roomId}")
+    UpdateRoomOutput update(@Param("roomId") String roomId, UpdateRoomInput request);
 
-    @PatchMapping(path = URLMapping.PARTIAL_UPDATE_ROOM, consumes = "application/json-patch+json")
-    ResponseEntity<PartialUpdateRoomOutput> partialUpdate(@RequestParam("id") String id, @RequestBody PartialUpdateRoomInput request);
+    @RequestLine("PATCH /api/system/room/{roomId}")
+    @Headers({"Content-Type: application/json-patch+json"})
+    PartialUpdateRoomOutput partialUpdate(@Param("roomId") String roomId, PartialUpdateRoomInput request);
 
-    @DeleteMapping(URLMapping.DELETE_ROOM)
-    ResponseEntity<DeleteRoomOutput> delete(@RequestParam("id") String id);
+    @RequestLine("DELETE /api/system/room/{roomId}")
+    DeleteRoomOutput delete(@Param("roomId") String roomId);
 }
