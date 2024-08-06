@@ -17,8 +17,8 @@ public class RoomToRoomByIdOutputConverter implements Converter<Room, RoomByIdOu
         RoomByIdOutput.RoomByIdOutputBuilder output = RoomByIdOutput.builder()
                 .id(input.getId().toString())
                 .floor(input.getFloor())
-                .bathroomType(input.getBathroomType())
-                .bedSizes(input.getBedSizes().stream().map(Bed::getBedSize).toList())
+                .bathroomType(input.getBathroomType().toString())
+                .bedSizes(input.getBedSizes().stream().map(Bed::toString).toList())
                 .price(input.getPrice());
 
         log.info("End converting from Room to RoomByIdOutput.RoomByIdOutputBuilder with output: {}", output);

@@ -1,6 +1,6 @@
 package com.tinqinacademy.hotel.api.operations.annotations.bathroom;
 
-import com.tinqinacademy.hotel.persistence.model.BathroomType;
+import com.tinqinacademy.hotel.api.operations.model.BathroomType;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 

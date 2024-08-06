@@ -1,8 +1,6 @@
 package com.tinqinacademy.hotel.api.operations.hotel.roombyid;
 
 import com.tinqinacademy.hotel.api.operations.base.OperationOutput;
-import com.tinqinacademy.hotel.persistence.model.BathroomType;
-import com.tinqinacademy.hotel.persistence.model.BedSize;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -19,7 +17,7 @@ public class RoomByIdOutput implements OperationOutput {
     private String id;
     private BigDecimal price;
     private Integer floor;
-    private List<BedSize> bedSizes;
-    private BathroomType bathroomType;
+    private List<String> bedSizes;
+    private String bathroomType;
     private List<LocalDate> datesOccupied;
 }
