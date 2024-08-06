@@ -1,6 +1,6 @@
 package com.tinqinacademy.hotel.api.operations.annotations.bedsize;
 
-import com.tinqinacademy.hotel.persistence.model.BedSize;
+import com.tinqinacademy.hotel.api.operations.model.BedSize;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
