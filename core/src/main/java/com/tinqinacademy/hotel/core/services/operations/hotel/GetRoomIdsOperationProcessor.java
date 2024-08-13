@@ -6,8 +6,8 @@ import com.tinqinacademy.hotel.api.operations.hotel.getroomids.GetRoomIdsOperati
 import com.tinqinacademy.hotel.api.operations.hotel.getroomids.GetRoomIdsOutput;
 import com.tinqinacademy.hotel.core.services.operations.BaseOperationProcessor;
 import com.tinqinacademy.hotel.core.utils.ErrorMapper;
-import com.tinqinacademy.hotel.persistence.entity.Room;
-import com.tinqinacademy.hotel.persistence.model.BathroomType;
+import com.tinqinacademy.hotel.persistence.entities.Room;
+import com.tinqinacademy.hotel.persistence.models.BathroomType;
 import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
 import io.vavr.control.Either;
 import io.vavr.control.Try;

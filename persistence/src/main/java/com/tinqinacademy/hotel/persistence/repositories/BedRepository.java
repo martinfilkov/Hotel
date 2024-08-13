@@ -1,7 +1,7 @@
 package com.tinqinacademy.hotel.persistence.repositories;
 
-import com.tinqinacademy.hotel.persistence.entity.Bed;
-import com.tinqinacademy.hotel.persistence.model.BedSize;
+import com.tinqinacademy.hotel.persistence.entities.Bed;
+import com.tinqinacademy.hotel.persistence.models.BedSize;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

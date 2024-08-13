@@ -1,4 +1,4 @@
-package com.tinqinacademy.hotel.api.operations.exception;
+package com.tinqinacademy.hotel.api.operations.exceptions;
 
 public class NotFoundException extends CustomException {
     public NotFoundException(String message) {

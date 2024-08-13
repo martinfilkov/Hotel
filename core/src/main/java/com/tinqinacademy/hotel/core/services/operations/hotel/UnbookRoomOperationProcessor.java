@@ -1,13 +1,13 @@
 package com.tinqinacademy.hotel.core.services.operations.hotel;
 
 import com.tinqinacademy.hotel.api.operations.base.Errors;
-import com.tinqinacademy.hotel.api.operations.exception.NotFoundException;
+import com.tinqinacademy.hotel.api.operations.exceptions.NotFoundException;
 import com.tinqinacademy.hotel.api.operations.hotel.unbookroom.UnbookRoomInput;
 import com.tinqinacademy.hotel.api.operations.hotel.unbookroom.UnbookRoomOperation;
 import com.tinqinacademy.hotel.api.operations.hotel.unbookroom.UnbookRoomOutput;
 import com.tinqinacademy.hotel.core.services.operations.BaseOperationProcessor;
 import com.tinqinacademy.hotel.core.utils.ErrorMapper;
-import com.tinqinacademy.hotel.persistence.entity.Reservation;
+import com.tinqinacademy.hotel.persistence.entities.Reservation;
 import com.tinqinacademy.hotel.persistence.repositories.ReservationRepository;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
@@ -44,12 +44,12 @@ public class UnbookRoomOperationProcessor extends BaseOperationProcessor impleme
                 .flatMap(validated -> unbookRoom(input));
     }
 
-    private Either<Errors, UnbookRoomOutput> unbookRoom(UnbookRoomInput input){
+    private Either<Errors, UnbookRoomOutput> unbookRoom(UnbookRoomInput input) {
         return Try.of(() -> {
                     log.info("Start unbookRoom input: {}", input);
                     Reservation reservation = getIfReservationExists(input);
                     reservationRepository.delete(reservation);
-                    UnbookRoomOutput output = new UnbookRoomOutput();
+                    UnbookRoomOutput output = UnbookRoomOutput.builder().build();
                     log.info("End unbookRoom output: {}", output);
                     return output;
                 })

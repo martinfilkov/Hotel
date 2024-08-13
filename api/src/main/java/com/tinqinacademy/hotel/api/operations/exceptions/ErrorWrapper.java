@@ -1,11 +1,9 @@
-package com.tinqinacademy.hotel.api.operations.exception;
+package com.tinqinacademy.hotel.api.operations.exceptions;
 
 import com.tinqinacademy.hotel.api.operations.base.Errors;
 import lombok.*;
 
 import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 @NoArgsConstructor

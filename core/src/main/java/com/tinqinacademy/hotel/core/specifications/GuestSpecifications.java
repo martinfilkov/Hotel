@@ -1,6 +1,6 @@
 package com.tinqinacademy.hotel.core.specifications;
 
-import com.tinqinacademy.hotel.persistence.entity.Guest;
+import com.tinqinacademy.hotel.persistence.entities.Guest;
 import org.springframework.data.jpa.domain.Specification;
 
 public class GuestSpecifications {

@@ -1,14 +1,13 @@
 package com.tinqinacademy.hotel.core.utils;
 
 import com.tinqinacademy.hotel.api.operations.base.OperationInput;
-import com.tinqinacademy.hotel.api.operations.exception.ErrorResponse;
-import com.tinqinacademy.hotel.api.operations.exception.ErrorWrapper;
+import com.tinqinacademy.hotel.api.operations.exceptions.ErrorResponse;
+import com.tinqinacademy.hotel.api.operations.exceptions.ErrorWrapper;
 import jakarta.validation.ConstraintViolation;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;

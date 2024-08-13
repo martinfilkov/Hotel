@@ -1,20 +1,18 @@
 package com.tinqinacademy.hotel.core.services.operations.hotel;
 
 import com.tinqinacademy.hotel.api.operations.base.Errors;
-import com.tinqinacademy.hotel.api.operations.exception.InvalidInputException;
-import com.tinqinacademy.hotel.api.operations.exception.NotAvailableException;
-import com.tinqinacademy.hotel.api.operations.exception.NotFoundException;
+import com.tinqinacademy.hotel.api.operations.exceptions.InvalidInputException;
+import com.tinqinacademy.hotel.api.operations.exceptions.NotAvailableException;
+import com.tinqinacademy.hotel.api.operations.exceptions.NotFoundException;
 import com.tinqinacademy.hotel.api.operations.hotel.bookroom.BookRoomInput;
 import com.tinqinacademy.hotel.api.operations.hotel.bookroom.BookRoomOperation;
 import com.tinqinacademy.hotel.api.operations.hotel.bookroom.BookRoomOutput;
 import com.tinqinacademy.hotel.core.services.operations.BaseOperationProcessor;
 import com.tinqinacademy.hotel.core.utils.ErrorMapper;
-import com.tinqinacademy.hotel.persistence.entity.Reservation;
-import com.tinqinacademy.hotel.persistence.entity.Room;
-import com.tinqinacademy.hotel.persistence.entity.User;
+import com.tinqinacademy.hotel.persistence.entities.Reservation;
+import com.tinqinacademy.hotel.persistence.entities.Room;
 import com.tinqinacademy.hotel.persistence.repositories.ReservationRepository;
 import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
-import com.tinqinacademy.hotel.persistence.repositories.UserRepository;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
 import jakarta.validation.Validator;
@@ -35,19 +33,16 @@ import static io.vavr.Predicates.instanceOf;
 public class BookRoomOperationProcessor extends BaseOperationProcessor implements BookRoomOperation {
     private final ReservationRepository reservationRepository;
     private final RoomRepository roomRepository;
-    private final UserRepository userRepository;
 
     @Autowired
     public BookRoomOperationProcessor(ReservationRepository reservationRepository,
                                       RoomRepository roomRepository,
-                                      UserRepository userRepository,
                                       ConversionService conversionService,
                                       Validator validator,
                                       ErrorMapper errorMapper) {
         super(conversionService, validator, errorMapper);
         this.reservationRepository = reservationRepository;
         this.roomRepository = roomRepository;
-        this.userRepository = userRepository;
     }
 
     @Override
@@ -62,12 +57,11 @@ public class BookRoomOperationProcessor extends BaseOperationProcessor implement
                     checkIfReservationPeriodIsValid(input);
                     checkIfReservationExists(input);
 
-                    User user = getIfUserExists(input);
                     Room room = getIfRoomExists(input);
 
                     Reservation reservation = conversionService.convert(input, Reservation.ReservationBuilder.class)
                             .room(room)
-                            .user(user)
+                            .userId(UUID.fromString(input.getUserId()))
                             .build();
 
                     reservationRepository.save(reservation);
@@ -83,17 +77,6 @@ public class BookRoomOperationProcessor extends BaseOperationProcessor implement
                         Case($(instanceOf(InvalidInputException.class)), ex -> errorMapper.handleError(ex, HttpStatus.BAD_REQUEST)),
                         Case($(), ex -> errorMapper.handleError(ex, HttpStatus.BAD_REQUEST))
                 ));
-    }
-
-    private User getIfUserExists(BookRoomInput input) {
-        log.info("Try to get a user with user id: {}", input.getUserId());
-        Optional<User> userOptional = userRepository.findById(UUID.fromString(input.getUserId()));
-        if (userOptional.isEmpty()) {
-            throw new NotFoundException(String.format("User with id %s not found", input.getUserId()));
-        }
-
-        log.info("Found user with user id: {}", input.getUserId());
-        return userOptional.get();
     }
 
     private Room getIfRoomExists(BookRoomInput input) {

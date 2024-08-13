@@ -1,11 +1,10 @@
 package com.tinqinacademy.hotel.core.utils;
 
-import com.tinqinacademy.hotel.persistence.entity.Reservation;
+import com.tinqinacademy.hotel.persistence.entities.Reservation;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class DateUtils {
     public static List<LocalDate> getDatesOccupied(List<Reservation> reservations) {

@@ -1,6 +1,6 @@
 package com.tinqinacademy.hotel.api.operations.base;
 
-public class URLMapping {
+public class HotelMappings {
     //Hotel
     public final static String GET_IDS = "/api/hotel/rooms";
     public final static String GET_ROOM = "/api/hotel/{roomId}";
