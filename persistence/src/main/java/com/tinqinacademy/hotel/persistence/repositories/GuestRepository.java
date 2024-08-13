@@ -1,6 +1,6 @@
 package com.tinqinacademy.hotel.persistence.repositories;
 
-import com.tinqinacademy.hotel.persistence.entity.Guest;
+import com.tinqinacademy.hotel.persistence.entities.Guest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;

@@ -1,14 +1,14 @@
 package com.tinqinacademy.hotel.core.services.operations.system;
 
 import com.tinqinacademy.hotel.api.operations.base.Errors;
-import com.tinqinacademy.hotel.api.operations.exception.InvalidInputException;
+import com.tinqinacademy.hotel.api.operations.exceptions.InvalidInputException;
 import com.tinqinacademy.hotel.api.operations.system.registervisitor.RegisterVisitorInputList;
 import com.tinqinacademy.hotel.api.operations.system.registervisitor.RegisterVisitorOperation;
 import com.tinqinacademy.hotel.api.operations.system.registervisitor.RegisterVisitorOutput;
 import com.tinqinacademy.hotel.core.services.operations.BaseOperationProcessor;
 import com.tinqinacademy.hotel.core.utils.ErrorMapper;
-import com.tinqinacademy.hotel.persistence.entity.Guest;
-import com.tinqinacademy.hotel.persistence.entity.Reservation;
+import com.tinqinacademy.hotel.persistence.entities.Guest;
+import com.tinqinacademy.hotel.persistence.entities.Reservation;
 import com.tinqinacademy.hotel.persistence.repositories.GuestRepository;
 import com.tinqinacademy.hotel.persistence.repositories.ReservationRepository;
 import io.vavr.control.Either;

@@ -1,7 +1,7 @@
-package com.tinqinacademy.hotel.persistence.initializer;
+package com.tinqinacademy.hotel.persistence.initializers;
 
-import com.tinqinacademy.hotel.persistence.entity.Bed;
-import com.tinqinacademy.hotel.persistence.model.BedSize;
+import com.tinqinacademy.hotel.persistence.entities.Bed;
+import com.tinqinacademy.hotel.persistence.models.BedSize;
 import com.tinqinacademy.hotel.persistence.repositories.BedRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

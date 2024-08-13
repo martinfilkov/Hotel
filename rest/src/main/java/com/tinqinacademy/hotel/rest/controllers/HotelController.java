@@ -1,7 +1,7 @@
 package com.tinqinacademy.hotel.rest.controllers;
 
 import com.tinqinacademy.hotel.api.operations.base.Errors;
-import com.tinqinacademy.hotel.api.operations.base.URLMapping;
+import com.tinqinacademy.hotel.api.operations.base.HotelMappings;
 import com.tinqinacademy.hotel.api.operations.hotel.bookroom.BookRoomInput;
 import com.tinqinacademy.hotel.api.operations.hotel.bookroom.BookRoomOperation;
 import com.tinqinacademy.hotel.api.operations.hotel.bookroom.BookRoomOutput;
@@ -37,7 +37,7 @@ public class HotelController extends BaseController {
             @ApiResponse(responseCode = "200", description = "Successfully returned ids"),
             @ApiResponse(responseCode = "403", description = "User not authorized")
     })
-    @GetMapping(URLMapping.GET_IDS)
+    @GetMapping(HotelMappings.GET_IDS)
     public ResponseEntity<?> getIds(
             @RequestParam("startDate") LocalDate startDate,
             @RequestParam("endDate") LocalDate endDate,
@@ -60,7 +60,7 @@ public class HotelController extends BaseController {
             @ApiResponse(responseCode = "403", description = "User not authorized"),
             @ApiResponse(responseCode = "404", description = "Room not found")
     })
-    @GetMapping(URLMapping.GET_ROOM)
+    @GetMapping(HotelMappings.GET_ROOM)
     public ResponseEntity<?> getRoom(@PathVariable String roomId) {
         RoomByIdInput input = RoomByIdInput.builder()
                 .id(roomId)
@@ -75,7 +75,7 @@ public class HotelController extends BaseController {
             @ApiResponse(responseCode = "201", description = "Successfully booked room"),
             @ApiResponse(responseCode = "403", description = "User not authorized")
     })
-    @PostMapping(URLMapping.BOOK_ROOM)
+    @PostMapping(HotelMappings.BOOK_ROOM)
     public ResponseEntity<?> bookRoom(@PathVariable String roomId,
                                       @RequestBody BookRoomInput request) {
         BookRoomInput input = request.toBuilder()
@@ -92,8 +92,8 @@ public class HotelController extends BaseController {
             @ApiResponse(responseCode = "403", description = "User not authorized"),
             @ApiResponse(responseCode = "404", description = "Room not found")
     })
-    @DeleteMapping(URLMapping.UNBOOK_ROOM)
-    public ResponseEntity<?> unbookRoom(@PathVariable String bookingId) {
+    @DeleteMapping(HotelMappings.UNBOOK_ROOM)
+    public ResponseEntity<?> unbookRoom(@PathVariable  String bookingId) {
         UnbookRoomInput input = UnbookRoomInput.builder()
                 .bookingId(bookingId)
                 .build();

@@ -1,4 +1,4 @@
-package com.tinqinacademy.hotel.persistence.entity;
+package com.tinqinacademy.hotel.persistence.entities;
 
 import jakarta.persistence.*;
 import jakarta.persistence.Entity;
@@ -30,9 +30,8 @@ public class Reservation {
     @Column(name = "end_date", nullable = false)
     private LocalDate endDate;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column(name = "user_id", nullable = false)
+    private UUID userId;
 
     @ManyToOne
     @JoinColumn(name = "room_id", nullable = false)

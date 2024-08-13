@@ -1,8 +1,8 @@
 package com.tinqinacademy.hotel.core.converters;
 
 import com.tinqinacademy.hotel.api.operations.system.createroom.CreateRoomInput;
-import com.tinqinacademy.hotel.persistence.entity.Room;
-import com.tinqinacademy.hotel.persistence.model.BathroomType;
+import com.tinqinacademy.hotel.persistence.entities.Room;
+import com.tinqinacademy.hotel.persistence.models.BathroomType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;

@@ -1,6 +1,6 @@
-package com.tinqinacademy.hotel.persistence.entity;
+package com.tinqinacademy.hotel.persistence.entities;
 
-import com.tinqinacademy.hotel.persistence.model.BedSize;
+import com.tinqinacademy.hotel.persistence.models.BedSize;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;

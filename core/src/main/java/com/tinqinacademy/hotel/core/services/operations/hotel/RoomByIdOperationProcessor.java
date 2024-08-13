@@ -1,15 +1,15 @@
 package com.tinqinacademy.hotel.core.services.operations.hotel;
 
 import com.tinqinacademy.hotel.api.operations.base.Errors;
-import com.tinqinacademy.hotel.api.operations.exception.NotFoundException;
+import com.tinqinacademy.hotel.api.operations.exceptions.NotFoundException;
 import com.tinqinacademy.hotel.api.operations.hotel.roombyid.RoomByIdInput;
 import com.tinqinacademy.hotel.api.operations.hotel.roombyid.RoomByIdOperation;
 import com.tinqinacademy.hotel.api.operations.hotel.roombyid.RoomByIdOutput;
 import com.tinqinacademy.hotel.core.services.operations.BaseOperationProcessor;
 import com.tinqinacademy.hotel.core.utils.DateUtils;
 import com.tinqinacademy.hotel.core.utils.ErrorMapper;
-import com.tinqinacademy.hotel.persistence.entity.Reservation;
-import com.tinqinacademy.hotel.persistence.entity.Room;
+import com.tinqinacademy.hotel.persistence.entities.Reservation;
+import com.tinqinacademy.hotel.persistence.entities.Room;
 import com.tinqinacademy.hotel.persistence.repositories.ReservationRepository;
 import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
 import io.vavr.control.Either;

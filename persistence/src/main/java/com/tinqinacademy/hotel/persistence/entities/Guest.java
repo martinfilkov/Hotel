@@ -1,4 +1,4 @@
-package com.tinqinacademy.hotel.persistence.entity;
+package com.tinqinacademy.hotel.persistence.entities;
 
 import jakarta.persistence.*;
 import jakarta.persistence.Entity;
@@ -17,26 +17,35 @@ import java.util.UUID;
 @Builder
 @ToString
 @Entity
-@Table(name = "users")
-public class User{
+@Table(name = "guests")
+public class Guest {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "username", nullable = false)
-    private String username;
+    @Column(name = "first_name", nullable = false)
+    private String firstName;
 
-    @Column(name = "email", nullable = false)
-    private String email;
-
-    @Column(name = "password", nullable = false)
-    private String password;
-
-    @Column(name = "birth_date", nullable = false)
-    private LocalDate birthDate;
+    @Column(name = "last_name", nullable = false)
+    private String lastName;
 
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
+
+    @Column(name = "id_card_number", nullable = false)
+    public String idCardNumber;
+
+    @Column(name = "id_card_validity", nullable = false)
+    private String idCardValidity;
+
+    @Column(name = "id_card_issue_authority", nullable = false)
+    private String idCardIssueAuthority;
+
+    @Column(name = "id_card_issue_date", nullable = false)
+    private String idCardIssueDate;
+
+    @Column(name = "birth_date", nullable = false)
+    private LocalDate birthDate;
 
     @CreationTimestamp
     @Column(name = "created_on", updatable = false)
@@ -45,5 +54,4 @@ public class User{
     @UpdateTimestamp
     @Column(name = "updated_on")
     private LocalDateTime updatedOn;
-
 }

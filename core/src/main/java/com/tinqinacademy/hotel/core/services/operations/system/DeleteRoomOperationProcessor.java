@@ -1,13 +1,13 @@
 package com.tinqinacademy.hotel.core.services.operations.system;
 
 import com.tinqinacademy.hotel.api.operations.base.Errors;
-import com.tinqinacademy.hotel.api.operations.exception.NotFoundException;
+import com.tinqinacademy.hotel.api.operations.exceptions.NotFoundException;
 import com.tinqinacademy.hotel.api.operations.system.deleteroom.DeleteRoomInput;
 import com.tinqinacademy.hotel.api.operations.system.deleteroom.DeleteRoomOperation;
 import com.tinqinacademy.hotel.api.operations.system.deleteroom.DeleteRoomOutput;
 import com.tinqinacademy.hotel.core.services.operations.BaseOperationProcessor;
 import com.tinqinacademy.hotel.core.utils.ErrorMapper;
-import com.tinqinacademy.hotel.persistence.entity.Room;
+import com.tinqinacademy.hotel.persistence.entities.Room;
 import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
@@ -52,7 +52,7 @@ public class DeleteRoomOperationProcessor extends BaseOperationProcessor impleme
 
                     roomRepository.delete(room);
 
-                    DeleteRoomOutput output = new DeleteRoomOutput();
+                    DeleteRoomOutput output = DeleteRoomOutput.builder().build();
 
                     log.info("End deleteRoom output: {}", output);
                     return output;

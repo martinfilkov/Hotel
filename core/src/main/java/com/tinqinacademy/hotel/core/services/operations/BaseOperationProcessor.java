@@ -2,7 +2,7 @@ package com.tinqinacademy.hotel.core.services.operations;
 
 import com.tinqinacademy.hotel.api.operations.base.Errors;
 import com.tinqinacademy.hotel.api.operations.base.OperationInput;
-import com.tinqinacademy.hotel.api.operations.exception.ErrorWrapper;
+import com.tinqinacademy.hotel.api.operations.exceptions.ErrorWrapper;
 import com.tinqinacademy.hotel.core.utils.ErrorMapper;
 import io.vavr.control.Either;
 import jakarta.validation.ConstraintViolation;

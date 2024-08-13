@@ -1,7 +1,7 @@
 package com.tinqinacademy.hotel.rest.controllers;
 
 import com.tinqinacademy.hotel.api.operations.base.Errors;
-import com.tinqinacademy.hotel.api.operations.base.URLMapping;
+import com.tinqinacademy.hotel.api.operations.base.HotelMappings;
 import com.tinqinacademy.hotel.api.operations.system.createroom.CreateRoomInput;
 import com.tinqinacademy.hotel.api.operations.system.createroom.CreateRoomOperation;
 import com.tinqinacademy.hotel.api.operations.system.createroom.CreateRoomOutput;
@@ -44,7 +44,7 @@ public class SystemController extends BaseController {
             @ApiResponse(responseCode = "201", description = "Registered a visitor"),
             @ApiResponse(responseCode = "403", description = "User not authorized")
     })
-    @PostMapping(URLMapping.REGISTER_VISITOR)
+    @PostMapping(HotelMappings.REGISTER_VISITOR)
     public ResponseEntity<?> register(@RequestBody RegisterVisitorInputList input) {
         Either<Errors, RegisterVisitorOutput> output = registerVisitorOperation.process(input);
 
@@ -56,7 +56,7 @@ public class SystemController extends BaseController {
             @ApiResponse(responseCode = "403", description = "User not authorized"),
             @ApiResponse(responseCode = "404", description = "Visitor not found")
     })
-    @GetMapping(URLMapping.INFO_REGISTRY)
+    @GetMapping(HotelMappings.INFO_REGISTRY)
     public ResponseEntity<?> infoRegistry(
             @RequestParam(value = "startDate") LocalDate startDate,
             @RequestParam(value = "endDate") LocalDate endDate,
@@ -92,7 +92,7 @@ public class SystemController extends BaseController {
             @ApiResponse(responseCode = "201", description = "Successfully created a room"),
             @ApiResponse(responseCode = "403", description = "User not authorized")
     })
-    @PostMapping(URLMapping.CREATE_ROOM)
+    @PostMapping(HotelMappings.CREATE_ROOM)
     public ResponseEntity<?> create(@RequestBody CreateRoomInput input) {
         Either<Errors, CreateRoomOutput> output = createRoomOperation.process(input);
 
@@ -104,7 +104,7 @@ public class SystemController extends BaseController {
             @ApiResponse(responseCode = "403", description = "User not authorized"),
             @ApiResponse(responseCode = "404", description = "Room not found")
     })
-    @PutMapping(URLMapping.UPDATE_ROOM)
+    @PutMapping(HotelMappings.UPDATE_ROOM)
     public ResponseEntity<?> update(@PathVariable("roomId") String id,
                                     @RequestBody UpdateRoomInput request) {
         UpdateRoomInput input = request.toBuilder()
@@ -121,7 +121,7 @@ public class SystemController extends BaseController {
             @ApiResponse(responseCode = "403", description = "User not authorized"),
             @ApiResponse(responseCode = "404", description = "Room not found")
     })
-    @PatchMapping(path = URLMapping.PARTIAL_UPDATE_ROOM, consumes = "application/json-patch+json")
+    @PatchMapping(path = HotelMappings.PARTIAL_UPDATE_ROOM, consumes = "application/json-patch+json")
     public ResponseEntity<?> partialUpdate(@PathVariable("roomId") String id,
                                            @RequestBody PartialUpdateRoomInput request) {
         PartialUpdateRoomInput input = request.toBuilder()
@@ -138,7 +138,7 @@ public class SystemController extends BaseController {
             @ApiResponse(responseCode = "403", description = "User not authorized"),
             @ApiResponse(responseCode = "404", description = "Room not found")
     })
-    @DeleteMapping(URLMapping.DELETE_ROOM)
+    @DeleteMapping(HotelMappings.DELETE_ROOM)
     public ResponseEntity<?> delete(@PathVariable("roomId") String id) {
         DeleteRoomInput input = DeleteRoomInput.builder()
                 .id(id)
