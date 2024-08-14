@@ -68,7 +68,7 @@ public interface HotelRestClient {
     UpdateRoomOutput update(@Param("roomId") String roomId, UpdateRoomInput request);
 
     @RequestLine("PATCH /api/system/room/{roomId}")
-//    @Headers("Content-Type: application/json-patch+json")
+    @Headers("Content-Type: application/json-patch+json")
     PartialUpdateRoomOutput partialUpdate(@Param("roomId") String roomId, PartialUpdateRoomInput request);
 
     @RequestLine("DELETE /api/system/room/{roomId}")
