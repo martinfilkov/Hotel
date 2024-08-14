@@ -22,10 +22,10 @@ import feign.RequestLine;
 import java.time.LocalDate;
 import java.util.Optional;
 
-@Headers({"Content-Type: application/json"})
 public interface HotelRestClient {
 
     // Hotel
+    @Headers({"Content-Type: application/json"})
     @RequestLine("GET /api/hotel/rooms?startDate={startDate}&endDate={endDate}&bedSize={bedSize}&bathroomType={bathroomType}")
     GetRoomIdsOutput getIds(
             @Param("startDate") LocalDate startDate,
@@ -34,19 +34,24 @@ public interface HotelRestClient {
             @Param("bathroomType") Optional<String> bathRoomType
     );
 
+    @Headers({"Content-Type: application/json"})
     @RequestLine("GET /api/hotel/{roomId}")
     RoomByIdOutput getRoom(@Param("roomId") String roomId);
 
+    @Headers({"Content-Type: application/json"})
     @RequestLine("POST /api/hotel/{roomId}")
     BookRoomOutput bookRoom(@Param("roomId") String roomId, BookRoomInput request);
 
+    @Headers({"Content-Type: application/json"})
     @RequestLine("DELETE /api/hotel/{bookingId}")
     UnbookRoomOutput unbookRoom(@Param("bookingId") String bookingId);
 
     // System
+    @Headers({"Content-Type: application/json"})
     @RequestLine("POST /api/system/register")
     RegisterVisitorOutput register(RegisterVisitorInputList input);
 
+    @Headers({"Content-Type: application/json"})
     @RequestLine("GET /api/system/register?startDate={startDate}&endDate={endDate}&roomNumber={roomNumber}&firstName={firstName}&lastName={lastName}&phone={phone}&idCardNumber={idCardNumber}&idCardValidity={idCardValidity}&idCardIssueAuthority={idCardIssueAuthority}&idCardIssueDate={idCardIssueDate}")
     InfoRegisterOutputList infoRegistry(
             @Param("startDate") LocalDate startDate,
@@ -61,16 +66,19 @@ public interface HotelRestClient {
             @Param("idCardIssueDate") String idCardIssueDate
     );
 
+    @Headers({"Content-Type: application/json"})
     @RequestLine("POST /api/system/room")
     CreateRoomOutput create(CreateRoomInput input);
 
+    @Headers({"Content-Type: application/json"})
     @RequestLine("PUT /api/system/room/{roomId}")
     UpdateRoomOutput update(@Param("roomId") String roomId, UpdateRoomInput request);
 
-    @RequestLine("PATCH /api/system/room/{roomId}")
     @Headers("Content-Type: application/json-patch+json")
+    @RequestLine("PATCH /api/system/room/{roomId}")
     PartialUpdateRoomOutput partialUpdate(@Param("roomId") String roomId, PartialUpdateRoomInput request);
 
+    @Headers({"Content-Type: application/json"})
     @RequestLine("DELETE /api/system/room/{roomId}")
     DeleteRoomOutput delete(@Param("roomId") String roomId);
 }
