@@ -2,6 +2,8 @@ package com.tinqinacademy.hotel.core.services.operations.system;
 
 import com.tinqinacademy.hotel.api.operations.base.Errors;
 import com.tinqinacademy.hotel.api.operations.exceptions.InvalidInputException;
+import com.tinqinacademy.hotel.api.operations.exceptions.NotAvailableException;
+import com.tinqinacademy.hotel.api.operations.exceptions.NotFoundException;
 import com.tinqinacademy.hotel.api.operations.system.registervisitor.RegisterVisitorInputList;
 import com.tinqinacademy.hotel.api.operations.system.registervisitor.RegisterVisitorOperation;
 import com.tinqinacademy.hotel.api.operations.system.registervisitor.RegisterVisitorOutput;
@@ -11,6 +13,7 @@ import com.tinqinacademy.hotel.persistence.entities.Guest;
 import com.tinqinacademy.hotel.persistence.entities.Reservation;
 import com.tinqinacademy.hotel.persistence.repositories.GuestRepository;
 import com.tinqinacademy.hotel.persistence.repositories.ReservationRepository;
+import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
 import jakarta.validation.Validator;
@@ -31,16 +34,19 @@ import static io.vavr.Predicates.instanceOf;
 public class RegisterVisitorOperationProcessor extends BaseOperationProcessor implements RegisterVisitorOperation {
     private final ReservationRepository reservationRepository;
     private final GuestRepository guestRepository;
+    private final RoomRepository roomRepository;
 
     @Autowired
     public RegisterVisitorOperationProcessor(ReservationRepository reservationRepository,
                                              GuestRepository guestRepository,
                                              ConversionService conversionService,
                                              Validator validator,
-                                             ErrorMapper errorMapper) {
+                                             ErrorMapper errorMapper,
+                                             RoomRepository roomRepository) {
         super(conversionService, validator, errorMapper);
         this.reservationRepository = reservationRepository;
         this.guestRepository = guestRepository;
+        this.roomRepository = roomRepository;
     }
 
     @Override
@@ -74,6 +80,8 @@ public class RegisterVisitorOperationProcessor extends BaseOperationProcessor im
                 })
                 .toEither()
                 .mapLeft(throwable -> Match(throwable).of(
+                        Case($(instanceOf(NotFoundException.class)), ex -> errorMapper.handleError(ex, HttpStatus.NOT_FOUND)),
+                        Case($(instanceOf(NotAvailableException.class)), ex -> errorMapper.handleError(ex, HttpStatus.CONFLICT)),
                         Case($(instanceOf(InvalidInputException.class)), ex -> errorMapper.handleError(ex, HttpStatus.BAD_REQUEST)),
                         Case($(), ex -> errorMapper.handleError(ex, HttpStatus.BAD_REQUEST))
                 ));
@@ -98,6 +106,11 @@ public class RegisterVisitorOperationProcessor extends BaseOperationProcessor im
     private Reservation getIfReservationExists(RegisterVisitorInputList inputList) {
         log.info("Try to get reservation with room number: {}", inputList.getRoomNumber());
 
+        Boolean roomExists = roomRepository.existsByRoomNumber(inputList.getRoomNumber());
+        if (!roomExists) {
+            throw new NotFoundException(String.format("Room with room number %s not found", inputList.getRoomNumber()));
+        }
+
         Optional<Reservation> reservationOptional = reservationRepository.findAvailableRoomByRoomNumberAndPeriod(
                 inputList.getRoomNumber(),
                 inputList.getStartDate(),
@@ -105,9 +118,11 @@ public class RegisterVisitorOperationProcessor extends BaseOperationProcessor im
         );
 
         if (reservationOptional.isEmpty()) {
-            throw new InvalidInputException(
-                    "The room number you specified does not exist or is not available between the given period"
-            );
+            throw new NotAvailableException("The room number you specified is not available between the given period");
+        }
+
+        if (!reservationOptional.get().getGuests().isEmpty()) {
+            throw new NotAvailableException("Guest have already been registered with that reservation");
         }
 
         log.info("Found reservation with room number: {}", inputList.getRoomNumber());
