@@ -26,6 +26,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, UUID> 
                                                                  @Param("startDate") LocalDate startDate,
                                                                  @Param("endDate") LocalDate endDate);
 
-
     List<Reservation> findByRoomId(UUID roomId);
+
+    boolean existsByRoomId(UUID roomId);
 }

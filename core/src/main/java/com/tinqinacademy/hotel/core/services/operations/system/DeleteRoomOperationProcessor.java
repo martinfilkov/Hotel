@@ -8,6 +8,7 @@ import com.tinqinacademy.hotel.api.operations.system.deleteroom.DeleteRoomOutput
 import com.tinqinacademy.hotel.core.services.operations.BaseOperationProcessor;
 import com.tinqinacademy.hotel.core.utils.ErrorMapper;
 import com.tinqinacademy.hotel.persistence.entities.Room;
+import com.tinqinacademy.hotel.persistence.repositories.ReservationRepository;
 import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
@@ -28,14 +29,17 @@ import static io.vavr.Predicates.instanceOf;
 @Service
 public class DeleteRoomOperationProcessor extends BaseOperationProcessor implements DeleteRoomOperation {
     private final RoomRepository roomRepository;
+    private final ReservationRepository reservationRepository;
 
     @Autowired
     public DeleteRoomOperationProcessor(RoomRepository roomRepository,
                                         ConversionService conversionService,
                                         Validator validator,
-                                        ErrorMapper errorMapper) {
+                                        ErrorMapper errorMapper,
+                                        ReservationRepository reservationRepository) {
         super(conversionService, validator, errorMapper);
         this.roomRepository = roomRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     @Override
@@ -49,6 +53,7 @@ public class DeleteRoomOperationProcessor extends BaseOperationProcessor impleme
                     log.info("Start deleteRoom input: {}", input);
 
                     Room room = getIfRoomExists(input);
+                    checkIfRoomHasReservations(room);
 
                     roomRepository.delete(room);
 
@@ -74,5 +79,15 @@ public class DeleteRoomOperationProcessor extends BaseOperationProcessor impleme
 
         log.info("Room with id {} exists", input.getId());
         return roomOptional.get();
+    }
+
+    private void checkIfRoomHasReservations(Room room) {
+        log.info("Checking if room with id {} has reservations", room.getId());
+
+        if (reservationRepository.existsByRoomId(room.getId())) {
+            throw new IllegalStateException("Room with id " + room.getId() + " cannot be deleted as it has active reservations");
+        }
+
+        log.info("Room with id {} has no reservations", room.getId());
     }
 }
