@@ -41,11 +41,6 @@ public class GetRoomIdsIntegrationTest {
     @MockBean
     private RoomRepository roomRepository;
 
-    @AfterEach
-    public void cleanRooms() {
-        roomRepository.deleteAll();
-    }
-
     @Test
     public void testGetRoomIds_success() throws Exception {
         GetRoomIdsInput input = GetRoomIdsInput.builder()

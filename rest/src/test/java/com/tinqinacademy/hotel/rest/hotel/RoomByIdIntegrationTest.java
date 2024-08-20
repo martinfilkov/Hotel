@@ -44,11 +44,6 @@ public class RoomByIdIntegrationTest {
     @Autowired
     private ConversionService conversionService;
 
-    @AfterEach
-    public void cleanRooms() {
-        roomRepository.deleteAll();
-    }
-
     @Test
     public void testRoomById_success() throws Exception {
         UUID roomId = UUID.randomUUID();
