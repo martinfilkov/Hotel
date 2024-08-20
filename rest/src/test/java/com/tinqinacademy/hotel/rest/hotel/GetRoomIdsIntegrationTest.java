@@ -87,7 +87,7 @@ public class GetRoomIdsIntegrationTest {
     }
 
     @Test
-    public void testGetRoomIds_invalid_dates() throws Exception {
+    public void testGetRoomIds_invalid_dates_failure() throws Exception {
         GetRoomIdsInput input = GetRoomIdsInput.builder()
                 .startDate(LocalDate.of(2024, 9, 10))
                 .endDate(LocalDate.of(2024, 9, 1))
