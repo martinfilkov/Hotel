@@ -1,6 +1,7 @@
 package com.tinqinacademy.hotel.core.services.operations.hotel;
 
 import com.tinqinacademy.hotel.api.operations.base.Errors;
+import com.tinqinacademy.hotel.api.operations.exceptions.InvalidInputException;
 import com.tinqinacademy.hotel.api.operations.hotel.getroomids.GetRoomIdsInput;
 import com.tinqinacademy.hotel.api.operations.hotel.getroomids.GetRoomIdsOperation;
 import com.tinqinacademy.hotel.api.operations.hotel.getroomids.GetRoomIdsOutput;
@@ -23,6 +24,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 import static io.vavr.API.*;
+import static io.vavr.Predicates.instanceOf;
 
 @Slf4j
 @Service
@@ -44,10 +46,11 @@ public class GetRoomIdsOperationProcessor extends BaseOperationProcessor impleme
                 .flatMap(validated -> getRoomIds(input));
     }
 
-    private Either<Errors, GetRoomIdsOutput> getRoomIds(GetRoomIdsInput input){
+    private Either<Errors, GetRoomIdsOutput> getRoomIds(GetRoomIdsInput input) {
         return Try.of(() ->
                 {
                     log.info("Start getRoomIds input: {}", input);
+                    checkIfReservationPeriodIsValid(input);
                     List<Room> rooms = roomRepository.findAvailableRooms(input.getStartDate(), input.getEndDate());
 
                     List<Room> availableRooms = rooms.stream()
@@ -62,7 +65,9 @@ public class GetRoomIdsOperationProcessor extends BaseOperationProcessor impleme
                 })
                 .toEither()
                 .mapLeft(throwable -> Match(throwable).of(
-                        Case($(), ex -> errorMapper.handleError(ex, HttpStatus.BAD_REQUEST))));
+                        Case($(instanceOf(InvalidInputException.class)), ex -> errorMapper.handleError(ex, HttpStatus.BAD_REQUEST)),
+                        Case($(), ex -> errorMapper.handleError(ex, HttpStatus.BAD_REQUEST)))
+                );
     }
 
     private Predicate<Room> bedSizeFilter(Optional<String> bedSize) {
@@ -76,5 +81,11 @@ public class GetRoomIdsOperationProcessor extends BaseOperationProcessor impleme
         return room -> bathroomType
                 .map(type -> BathroomType.getByCode(type) == room.getBathroomType())
                 .orElse(true);
+    }
+
+    private void checkIfReservationPeriodIsValid(GetRoomIdsInput input) {
+        if (input.getEndDate().isBefore(input.getStartDate())) {
+            throw new InvalidInputException("Start date cannot be after end date");
+        }
     }
 }
