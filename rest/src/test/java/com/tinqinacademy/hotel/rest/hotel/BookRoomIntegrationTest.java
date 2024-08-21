@@ -100,7 +100,7 @@ public class BookRoomIntegrationTest {
                 .thenReturn(reservation);
 
         mockMvc.perform(post(HotelMappings.BOOK_ROOM, roomId.toString())
-                        .content(input.toString())
+                        .content(input)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
     }
