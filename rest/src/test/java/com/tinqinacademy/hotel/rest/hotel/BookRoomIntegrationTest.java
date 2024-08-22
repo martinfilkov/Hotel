@@ -132,7 +132,6 @@ public class BookRoomIntegrationTest {
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.code").value(409))
                 .andExpect(jsonPath("$.errors[0].message")
-                        .value(String.format("Room with id %s is not available within the given period", roomId)))
-        ;
+                        .value(String.format("Room with id %s is not available within the given period", roomId)));
     }
 }
