@@ -8,6 +8,7 @@ import com.tinqinacademy.hotel.persistence.models.BedSize;
 import com.tinqinacademy.hotel.persistence.repositories.ReservationRepository;
 import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,11 +39,25 @@ public class DeleteRoomIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @Autowired
     private RoomRepository roomRepository;
 
-    @MockBean
+    @Autowired
     private ReservationRepository reservationRepository;
+
+    private Room savedRoom;
+
+    @BeforeEach
+    public void createRoom() {
+        Room room = Room.builder()
+                .bathroomType(BathroomType.PRIVATE)
+                .roomNumber("test")
+                .bedSizes(List.of())
+                .price(BigDecimal.TEN)
+                .floor(3)
+                .build();
+        savedRoom = roomRepository.save(room);
+    }
 
     @AfterEach
     public void cleanRooms() {
@@ -51,36 +66,13 @@ public class DeleteRoomIntegrationTest {
 
     @Test
     public void testDeleteRoom_success() throws Exception {
-        Bed bed = Bed.builder()
-                .bedSize(BedSize.SINGLE)
-                .count(1)
-                .build();
-
-        UUID roomId = UUID.randomUUID();
-        Room room = Room.builder()
-                .id(roomId)
-                .bathroomType(BathroomType.PRIVATE)
-                .roomNumber("test")
-                .bedSizes(List.of(bed))
-                .price(BigDecimal.valueOf(123))
-                .floor(3)
-                .build();
-
-        when(roomRepository.findById(any(UUID.class)))
-                .thenReturn(Optional.of(room));
-
-        when(reservationRepository.existsByRoomId(any(UUID.class)))
-                .thenReturn(false);
-
-        mockMvc.perform(delete(HotelMappings.DELETE_ROOM, roomId.toString()))
+        mockMvc.perform(delete(HotelMappings.DELETE_ROOM, savedRoom.getId().toString()))
                 .andExpect(status().isAccepted());
     }
 
     @Test
     public void testDeleteRoom_roomNotFound_failure() throws Exception {
         UUID roomId = UUID.randomUUID();
-        when(roomRepository.findById(any(UUID.class)))
-                .thenReturn(Optional.empty());
 
         mockMvc.perform(delete(HotelMappings.DELETE_ROOM, roomId.toString()))
                 .andExpect(status().isNotFound());
