@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -24,6 +25,7 @@ public class RegisterVisitorInputList implements OperationInput {
     private LocalDate endDate;
 
     @NotBlank(message = "Room number is required")
+    @Size(min = 2, max = 10)
     private String roomNumber;
 
     @NotNull(message = "visitors cannot be null")

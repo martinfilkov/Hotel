@@ -1,14 +1,20 @@
 package com.tinqinacademy.hotel.rest.system;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tinqinacademy.hotel.api.operations.base.HotelMappings;
+import com.tinqinacademy.hotel.api.operations.system.partialupdate.PartialUpdateRoomInput;
 import com.tinqinacademy.hotel.persistence.entities.Bed;
 import com.tinqinacademy.hotel.persistence.entities.Room;
 import com.tinqinacademy.hotel.persistence.models.BathroomType;
 import com.tinqinacademy.hotel.persistence.models.BedSize;
 import com.tinqinacademy.hotel.persistence.repositories.BedRepository;
 import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -37,11 +43,28 @@ public class PartialUpdateRoomIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @Autowired
     private RoomRepository roomRepository;
 
-    @MockBean
+    @Autowired
     private BedRepository bedRepository;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    private Room savedRoom;
+
+    @BeforeEach
+    public void createRoom() {
+        Room room = Room.builder()
+                .bathroomType(BathroomType.PRIVATE)
+                .roomNumber("test")
+                .bedSizes(List.of())
+                .price(BigDecimal.TEN)
+                .floor(3)
+                .build();
+        savedRoom = this.roomRepository.save(room);
+    }
 
     @AfterEach
     public void cleanRooms() {
@@ -50,58 +73,50 @@ public class PartialUpdateRoomIntegrationTest {
 
     @Test
     public void testPartialUpdateRoom_success() throws Exception {
-        String input = """
-                 {
-                    "price": 123
-                  }
-                """;
-
-        Bed bed = Bed.builder()
-                .bedSize(BedSize.SINGLE)
-                .count(1)
+        BigDecimal price = BigDecimal.valueOf(123);
+        PartialUpdateRoomInput partialInput = PartialUpdateRoomInput.builder()
+                .price(price)
                 .build();
 
-        UUID roomId = UUID.randomUUID();
-        Room room = Room.builder()
-                .id(roomId)
-                .bathroomType(BathroomType.PRIVATE)
-                .roomNumber("test")
-                .bedSizes(List.of(bed))
-                .price(BigDecimal.valueOf(123))
-                .floor(3)
-                .build();
+        String input = objectMapper.writeValueAsString(partialInput);
 
-        when(roomRepository.findById(any(UUID.class)))
-                .thenReturn(Optional.of(room));
-
-        when(bedRepository.findAllByBedSizeIn(anyList()))
-                .thenReturn(List.of(bed));
-
-        when(roomRepository.save(any(Room.class)))
-                .thenReturn(room);
-
-        mockMvc.perform(patch(HotelMappings.PARTIAL_UPDATE_ROOM, roomId.toString())
+        mockMvc.perform(patch(HotelMappings.PARTIAL_UPDATE_ROOM, savedRoom.getId().toString())
                         .content(input)
                         .contentType("application/json-patch+json"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(roomId.toString()));
+                .andExpect(jsonPath("$.id").value(savedRoom.getId().toString()));
     }
 
     @Test
     public void testPartialUpdateRoom_roomNotFound_failure() throws Exception {
-        String input = """
-                 {
-                    "price": 123
-                  }
-                """;
+        BigDecimal price = BigDecimal.valueOf(123);
+        PartialUpdateRoomInput partialInput = PartialUpdateRoomInput.builder()
+                .price(price)
+                .build();
+
+        String input = objectMapper.writeValueAsString(partialInput);
 
         UUID roomId = UUID.randomUUID();
-        when(roomRepository.findById(any(UUID.class)))
-                .thenReturn(Optional.empty());
 
         mockMvc.perform(patch(HotelMappings.PARTIAL_UPDATE_ROOM, roomId.toString())
                         .content(input)
                         .contentType("application/json-patch+json"))
                 .andExpect(status().isNotFound());
+    }
+
+    @SneakyThrows
+    @ParameterizedTest
+    @ValueSource(strings = {"asjldfasdlfk", "123124124"})
+    public void return400_when_price_is_invalid(String bathRoomType) {
+        PartialUpdateRoomInput partialInput = PartialUpdateRoomInput.builder()
+                .bathRoomType(bathRoomType)
+                .build();
+
+        String input = objectMapper.writeValueAsString(partialInput);
+
+        mockMvc.perform(patch(HotelMappings.PARTIAL_UPDATE_ROOM, savedRoom.getId().toString())
+                        .content(input)
+                        .contentType("application/json-patch+json"))
+                .andExpect(status().isBadRequest());
     }
 }
